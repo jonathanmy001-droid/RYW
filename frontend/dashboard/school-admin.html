@@ -1,0 +1,926 @@
+<!-- school-admin.html -->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>School Admin | Rwandan Youth Worship</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        luxuryGold: '#D4AF37',
+                        luxuryDark: '#050F0D',
+                        accentGreen: '#0B1F1A'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+        h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        
+        .glass-nav { background: rgba(5, 15, 13, 0.9); backdrop-filter: blur(20px); }
+        .sidebar-gradient { background: linear-gradient(to bottom, #050F0D, #0B1F1A); }
+        
+        .nav-link .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+            left: 100%;
+        }
+        .nav-link:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            left: 110%;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050F0D; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; }
+        
+        @media (min-width: 1024px) {
+            .main-content { padding-left: 100px; }
+        }
+    </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+<aside class="fixed bottom-0 left-0 w-full h-20 lg:w-24 lg:h-screen sidebar-gradient border-t lg:border-t-0 lg:border-r border-luxuryGold/10 z-[110] flex lg:flex-col items-center justify-around lg:justify-start lg:pt-8 pb-2 lg:pb-8">
+    
+    <div class="hidden lg:flex items-center justify-center mb-12">
+        <span class="font-cinzel text-2xl text-luxuryGold font-bold italic">RYW</span>
+    </div>
+    <nav class="flex lg:flex-col gap-2 md:gap-8 items-center w-full justify-around lg:justify-center">
+        
+        <a href="../youth.html#hub" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-home-7-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">DASHBOARD</span>
+        </a>
+        <a href="../worship.html" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-music-2-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">WORSHIP</span>
+        </a>
+        <a href="../youth.html#prayer" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-fire-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">PRAYER</span>
+        </a>
+        <a href="../youth.html#bible" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-book-open-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">STUDY</span>
+        </a>
+        <a href="../youth.html#mentors" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-parent-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">MENTORS</span>
+        </a>
+        <a href="../youth.html#chat" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-chat-3-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">CHAT</span>
+        </a>
+        <a href="../youth.html#growth" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-plant-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">GROWTH</span>
+        </a>
+    </nav>
+    <div class="hidden lg:flex flex-col mt-auto gap-6 items-center">
+        <button class="text-gray-500 hover:text-luxuryGold transition-all"><i class="ri-settings-4-line text-2xl"></i></button>
+        <button class="w-12 h-12 rounded-full border-2 border-luxuryGold/20 overflow-hidden hover:border-luxuryGold transition-all">
+            <img src="../../images/placeholder-avatar.jpg" alt="Profile" class="w-full h-full object-cover">  <!-- Update path if needed -->
+        </button>
+    </div>
+</aside>
+
+<main class="main-content min-h-screen">
+    
+    <header class="fixed top-0 right-0 left-0 lg:left-24 h-20 glass-nav border-b border-luxuryGold/10 z-[100] px-6 md:px-12 flex items-center justify-between">
+        <div class="flex flex-col">
+            <h2 class="text-xs font-bold text-luxuryGold tracking-[0.3em] font-cinzel">FEBRUARY 12, 2026</h2>
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Kigali, Rwanda</p>
+        </div>
+        <div class="flex items-center gap-6">
+            <button class="relative text-gray-400 hover:text-luxuryGold transition">
+                <i class="ri-notification-3-line text-xl"></i>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-luxuryDark"></span>
+            </button>
+            <button class="text-gray-400 hover:text-luxuryGold transition"><i class="ri-search-2-line text-xl"></i></button>
+            <div class="h-8 w-[1px] bg-white/10 mx-2"></div>
+            <button id="logoutBtn" class="text-xs font-bold tracking-widest text-red-500/70 hover:text-red-500 uppercase flex items-center gap-2">
+                <span class="hidden md:block">Logout</span>
+                <i class="ri-logout-circle-r-line text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="pt-28 pb-32 lg:pb-12 px-6 md:px-12 max-w-4xl mx-auto">
+        <h1 class="text-4xl md:text-6xl font-black mb-8">School Admin Dashboard</h1>
+        <p class="text-xl text-gray-300 italic mb-12">"Lead the youth to Imana - Post events to guide their spiritual journey"</p>
+
+        <!-- Analytics Section -->
+        <section class="mb-16 grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-up">
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-2xl p-6">
+                <h3 class="text-luxuryGold text-sm font-bold uppercase tracking-widest mb-2">Total Flock</h3>
+                <p class="text-4xl font-black text-white" id="stat-students">--</p>
+            </div>
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-2xl p-6">
+                <h3 class="text-luxuryGold text-sm font-bold uppercase tracking-widest mb-2">Active Spirits</h3>
+                <p class="text-4xl font-black text-green-400" id="stat-active">--</p>
+            </div>
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-2xl p-6">
+                <h3 class="text-luxuryGold text-sm font-bold uppercase tracking-widest mb-2">Prayer Groups</h3>
+                <p class="text-4xl font-black text-white" id="stat-groups">--</p>
+            </div>
+        </section>
+
+        <!-- Students List -->
+        <section class="mb-20" data-aos="fade-up">
+            <div class="flex items-end justify-between mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold">My Students</h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">School-scoped list (active/inactive)</p>
+                </div>
+                <button id="refreshStudentsBtn" class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1 hover:opacity-80">REFRESH</button>
+            </div>
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-6 overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-300">
+                    <thead class="text-luxuryGold uppercase text-xs tracking-widest">
+                        <tr>
+                            <th class="px-4 py-3">Name</th>
+                            <th class="px-4 py-3">Email</th>
+                            <th class="px-4 py-3">Streak</th>
+                            <th class="px-4 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsBody" class="divide-y divide-white/5">
+                        <tr><td colspan="4" class="p-6 text-center text-gray-500">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-20 grid grid-cols-1 lg:grid-cols-2 gap-8" data-aos="fade-up">
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+                <h3 class="text-xl font-bold mb-6">Spiritual Engagement</h3>
+                <div class="h-64">
+                    <canvas id="engagementChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8 flex flex-col justify-center items-center text-center">
+                <i class="ri-shield-star-line text-6xl text-luxuryGold mb-4"></i>
+                <h3 class="text-2xl font-bold mb-2">School Spiritual Health</h3>
+                <p class="text-green-400 text-xl font-bold">EXCELLENT</p>
+            </div>
+        </section>
+
+        <!-- Post New Event Form -->
+        <section class="mb-20" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6">Post New Worship Event</h2>
+            <form id="eventForm" class="space-y-6 bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-10">
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-luxuryGold">Event Title</label>
+                    <input type="text" name="title" required class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white placeholder-gray-500 focus:border-luxuryGold focus:outline-none transition-colors">
+                </div>
+                
+                <!-- Powerful Image Upload -->
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-luxuryGold">Event Poster</label>
+                    <div class="relative group">
+                        <input type="file" name="poster" id="posterInput" accept="image/*" class="hidden">
+                        
+                        <!-- Drop Zone -->
+                        <div id="posterDropZone" class="w-full p-8 bg-black/20 border-2 border-dashed border-luxuryGold/30 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all hover:border-luxuryGold hover:bg-luxuryGold/5">
+                            <div class="w-16 h-16 rounded-full bg-luxuryGold/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <i class="ri-image-add-line text-3xl text-luxuryGold"></i>
+                            </div>
+                            <p class="text-gray-300 font-bold group-hover:text-white transition-colors">Click to upload poster</p>
+                            <p class="text-gray-600 text-xs mt-2">Supports JPG, PNG (Max 5MB)</p>
+                        </div>
+
+                        <!-- Preview Area -->
+                        <div id="posterPreview" class="hidden mt-4 relative w-full h-80 rounded-xl overflow-hidden border border-luxuryGold/20 group-hover:border-luxuryGold transition-colors">
+                            <img src="" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                                <button type="button" id="changePoster" class="px-4 py-2 bg-luxuryGold text-black font-bold rounded-full text-xs tracking-widest hover:scale-105 transition">CHANGE</button>
+                                <button type="button" id="removePoster" class="px-4 py-2 bg-red-500 text-white font-bold rounded-full text-xs tracking-widest hover:scale-105 transition">REMOVE</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-luxuryGold">Date & Time</label>
+                    <input type="datetime-local" name="dateTime" required class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white focus:border-luxuryGold focus:outline-none transition-colors">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-luxuryGold">Description</label>
+                    <textarea name="description" rows="5" required class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white placeholder-gray-500 focus:border-luxuryGold focus:outline-none transition-colors"></textarea>
+                </div>
+                <button type="submit" class="w-full py-5 bg-luxuryGold text-black font-black rounded-full tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all transform hover:-translate-y-1">
+                    PUBLISH EVENT
+                </button>
+            </form>
+        </section>
+
+        <!-- Prayer Groups Management -->
+        <section class="mb-20" data-aos="fade-up">
+            <div class="flex items-end justify-between mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold">Prayer Groups</h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">Create groups and manage members in your school</p>
+                </div>
+                <button id="refreshGroupsBtn" class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1 hover:opacity-80">REFRESH</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+                    <h3 class="text-xl font-bold mb-6">Create New Group</h3>
+                    <form id="createGroupForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-luxuryGold">Group Name</label>
+                            <input id="groupName" type="text" required class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white placeholder-gray-500 focus:border-luxuryGold focus:outline-none transition-colors" placeholder="e.g. Dawn Prayer Warriors">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-luxuryGold">Description</label>
+                            <textarea id="groupDescription" rows="4" class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white placeholder-gray-500 focus:border-luxuryGold focus:outline-none transition-colors" placeholder="Purpose of this group..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-luxuryGold text-black font-black rounded-full tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.35)] transition-all">
+                            CREATE GROUP
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold">Groups List</h3>
+                        <span id="groupsCount" class="text-xs text-gray-500">0</span>
+                    </div>
+                    <div id="groupsList" class="space-y-4">
+                        <div class="text-center text-gray-500 py-10">Loading groups...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Groups Management -->
+        <section class="mb-20" data-aos="fade-up">
+            <div class="flex items-end justify-between mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold">Chat Groups</h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">Create school chat groups and manage members</p>
+                </div>
+                <button id="refreshChatGroupsBtn" class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1 hover:opacity-80">REFRESH</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+                    <h3 class="text-xl font-bold mb-6">Create New Chat Group</h3>
+                    <form id="createChatGroupForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-luxuryGold">Group Name</label>
+                            <input id="chatGroupName" type="text" required class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white placeholder-gray-500 focus:border-luxuryGold focus:outline-none transition-colors" placeholder="e.g. School Worship Chat">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-luxuryGold">Description</label>
+                            <textarea id="chatGroupDescription" rows="4" class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white placeholder-gray-500 focus:border-luxuryGold focus:outline-none transition-colors" placeholder="What is this chat for?"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-luxuryGold">Join Policy</label>
+                            <select id="chatJoinPolicy" class="w-full p-4 bg-luxuryDark border border-luxuryGold/20 rounded-xl text-white focus:border-luxuryGold focus:outline-none transition-colors">
+                                <option value="invite_only">Invite Only (Recommended)</option>
+                                <option value="request_to_join">Request To Join</option>
+                                <option value="open">Open</option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-2">Invite-only keeps the school chat safe and moderated.</p>
+                        </div>
+                        <label class="flex items-center gap-3 text-sm text-gray-300">
+                            <input id="chatDiscoverable" type="checkbox" class="w-4 h-4 accent-luxuryGold" checked>
+                            Discoverable in school list
+                        </label>
+                        <button type="submit" class="w-full py-4 bg-luxuryGold text-black font-black rounded-full tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.35)] transition-all">
+                            CREATE CHAT GROUP
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold">Chat Groups List</h3>
+                        <span id="chatGroupsCount" class="text-xs text-gray-500">0</span>
+                    </div>
+                    <div id="chatGroupsList" class="space-y-4">
+                        <div class="text-center text-gray-500 py-10">Loading chat groups...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Links for Admin -->
+        <div class="text-center">
+            <a href="../youth.html" class="inline-block px-10 py-4 border border-luxuryGold text-luxuryGold rounded-full font-bold tracking-widest hover:bg-luxuryGold hover:text-black transition">
+                Return to Dashboard
+            </a>
+        </div>
+    </div>
+</main>
+
+<script>
+    AOS.init({ duration: 1000, once: true });
+    const API_URL = 'http://localhost:5000/api';
+
+    // Basic auth guard for dashboards
+    if (!localStorage.getItem('token')) {
+      window.location.href = '../login.html';
+    }
+
+    // Load Stats
+    async function loadStats() {
+        const token = localStorage.getItem('token');
+        if(!token) return;
+
+        try {
+            const res = await fetch(`${API_URL}/school/stats`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+
+            document.getElementById('stat-students').textContent = data.totalStudents;
+            document.getElementById('stat-active').textContent = data.activeStudents;
+            document.getElementById('stat-groups').textContent = data.groupsCount;
+
+            // Render Chart
+            const labels = data?.activityByDay?.labels || ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+            const counts = data?.activityByDay?.counts || [0,0,0,0,0,0,0];
+            new Chart(document.getElementById('engagementChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Active Students',
+                        // Real DB-backed series: lastActive activity in the last N days
+                        data: counts,
+                        backgroundColor: '#D4AF37',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    scales: { y: { beginAtZero: true, grid: { color: '#333' } }, x: { grid: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+        } catch(e) { console.error(e); }
+    }
+    loadStats();
+
+    // Groups + Students cache for member management
+    let cachedStudents = [];
+
+    async function renderStudentsTable() {
+      const token = localStorage.getItem('token');
+      const body = document.getElementById('studentsBody');
+      body.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500">Loading...</td></tr>';
+      try {
+        const res = await fetch(`${API_URL}/school/students`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to load students');
+        cachedStudents = Array.isArray(data) ? data : [];
+
+        if (cachedStudents.length === 0) {
+          body.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500">No students found.</td></tr>';
+          return;
+        }
+
+        body.innerHTML = cachedStudents.slice(0, 50).map(s => {
+          const status = s.isActive ? 'Active' : 'Inactive';
+          const badge = s.isActive
+            ? '<span class="bg-green-900 text-green-300 px-2 py-1 rounded text-xs">Active</span>'
+            : '<span class="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs">Inactive</span>';
+          return `
+            <tr class="hover:bg-white/5 transition">
+              <td class="px-4 py-3 text-white font-medium">${s.firstName} ${s.lastName}</td>
+              <td class="px-4 py-3 text-gray-400">${s.email}</td>
+              <td class="px-4 py-3 text-luxuryGold">${s.devotionStreak || 0} days</td>
+              <td class="px-4 py-3">${badge}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+        body.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-red-400">${err.message || 'Failed to load students'}</td></tr>`;
+      }
+    }
+
+    async function fetchStudents() {
+      if (cachedStudents.length > 0) return cachedStudents;
+      await renderStudentsTable();
+      return cachedStudents;
+    }
+
+    function studentOptionsHtml(excludeIds = new Set()) {
+      return cachedStudents
+        .filter(s => !excludeIds.has(String(s._id)))
+        .map(s => `<option value="${s._id}">${s.firstName} ${s.lastName} (${s.email})</option>`)
+        .join('');
+    }
+
+    function groupCardHtml(group) {
+      const members = Array.isArray(group.members) ? group.members : [];
+      const memberIds = new Set(members.map(m => String(m._id)));
+      const membersHtml = members.length === 0
+        ? '<div class="text-xs text-gray-500 italic">No members yet</div>'
+        : members.map(m => `
+            <div class="flex items-center justify-between gap-3 py-2 border-b border-white/5 last:border-b-0">
+              <div class="text-sm text-gray-200">${m.firstName} ${m.lastName} <span class="text-xs text-gray-500">(${m.email})</span></div>
+              <button data-action="remove-member" data-group-id="${group._id}" data-user-id="${m._id}" class="text-xs font-bold tracking-widest text-red-400 hover:text-red-300">REMOVE</button>
+            </div>
+          `).join('');
+
+      return `
+        <div class="border border-luxuryGold/10 rounded-2xl p-5 bg-black/10">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <div class="text-lg font-bold text-white">${group.name}</div>
+              <div class="text-xs text-gray-500 mt-1">${group.description || ''}</div>
+              <div class="text-[10px] text-gray-600 uppercase tracking-widest mt-3">${members.length} members</div>
+            </div>
+            <button data-action="toggle-manage" data-group-id="${group._id}" class="px-3 py-2 rounded-lg border border-luxuryGold/20 text-xs font-bold tracking-widest text-luxuryGold hover:bg-luxuryGold/10">
+              MANAGE
+            </button>
+          </div>
+
+          <div id="manage-${group._id}" class="hidden mt-5 border-t border-white/5 pt-4 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-bold tracking-widest text-gray-400 uppercase mb-2">Add Youth</label>
+                <select data-role="add-select" data-group-id="${group._id}" class="w-full p-3 rounded-xl bg-luxuryDark border border-luxuryGold/20 text-white">
+                  <option value="">Select a student...</option>
+                  ${studentOptionsHtml(memberIds)}
+                </select>
+              </div>
+              <button data-action="add-member" data-group-id="${group._id}" class="w-full py-3 rounded-xl bg-luxuryGold text-black text-xs font-black tracking-widest hover:bg-white">
+                ADD
+              </button>
+            </div>
+
+            <div>
+              <div class="text-xs font-bold tracking-widest text-gray-400 uppercase mb-2">Members</div>
+              <div class="space-y-1">${membersHtml}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchGroups() {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/school/groups`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to load groups');
+      return Array.isArray(data) ? data : [];
+    }
+
+    async function renderGroups() {
+      const list = document.getElementById('groupsList');
+      const countEl = document.getElementById('groupsCount');
+      list.innerHTML = '<div class="text-center text-gray-500 py-10">Loading groups...</div>';
+
+      try {
+        if (cachedStudents.length === 0) await fetchStudents();
+        const groups = await fetchGroups();
+        countEl.textContent = `${groups.length}`;
+
+        if (groups.length === 0) {
+          list.innerHTML = '<div class="text-center text-gray-500 py-10">No groups yet. Create your first prayer group.</div>';
+          return;
+        }
+
+        list.innerHTML = groups.map(groupCardHtml).join('');
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = `<div class="text-center text-red-400 py-10">${err.message || 'Failed to load groups'}</div>`;
+      }
+    }
+
+    document.getElementById('refreshGroupsBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      renderGroups();
+    });
+
+    document.getElementById('createGroupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      const name = document.getElementById('groupName').value.trim();
+      const description = document.getElementById('groupDescription').value.trim();
+
+      try {
+        const res = await fetch(`${API_URL}/school/groups`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ name, description })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to create group');
+        e.target.reset();
+        renderGroups();
+        loadStats();
+      } catch (err) {
+        alert(err.message || 'Error creating group');
+      }
+    });
+
+    document.getElementById('groupsList').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+
+      const action = btn.getAttribute('data-action');
+      const groupId = btn.getAttribute('data-group-id');
+
+      if (action === 'toggle-manage') {
+        document.getElementById(`manage-${groupId}`)?.classList.toggle('hidden');
+        return;
+      }
+
+      const token = localStorage.getItem('token');
+
+      if (action === 'add-member') {
+        const select = document.querySelector(`select[data-role="add-select"][data-group-id="${groupId}"]`);
+        const userId = select?.value;
+        if (!userId) return alert('Select a student first');
+
+        try {
+          const res = await fetch(`${API_URL}/school/groups/${groupId}/members`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ userId })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || 'Failed to add member');
+          renderGroups();
+          loadStats();
+        } catch (err) {
+          alert(err.message || 'Error adding member');
+        }
+        return;
+      }
+
+      if (action === 'remove-member') {
+        const userId = btn.getAttribute('data-user-id');
+        if (!confirm('Remove this member from the group?')) return;
+
+        try {
+          const res = await fetch(`${API_URL}/school/groups/${groupId}/members/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || 'Failed to remove member');
+          renderGroups();
+          loadStats();
+        } catch (err) {
+          alert(err.message || 'Error removing member');
+        }
+      }
+    });
+
+    // Initial load
+    document.getElementById('refreshStudentsBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      renderStudentsTable();
+    });
+
+    renderStudentsTable();
+    renderGroups();
+    renderChatGroups();
+
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '../login.html';
+    });
+
+    // Chat Groups (DB-backed)
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function chatGroupCardHtml(group) {
+      const joinLabel =
+        group.joinPolicy === 'open' ? 'OPEN' :
+        (group.joinPolicy === 'request_to_join' ? 'REQUEST' : 'INVITE');
+
+      return `
+        <div class="bg-luxuryDark/60 border border-luxuryGold/10 rounded-2xl p-5">
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <div class="text-lg font-bold text-white">${escapeHtml(group.name)}</div>
+              <div class="text-xs text-gray-500 mt-1">${escapeHtml(group.description || '')}</div>
+              <div class="mt-3 inline-flex items-center gap-2">
+                <span class="text-[10px] font-black tracking-widest px-3 py-1 rounded-full bg-black/30 text-gray-200">${joinLabel}</span>
+                <span class="text-[10px] font-black tracking-widest px-3 py-1 rounded-full bg-black/30 text-gray-200">${group.visibility === 'national' ? 'NATIONAL' : 'SCHOOL'}</span>
+              </div>
+            </div>
+            <button data-action="toggle-chat-manage" data-group-id="${group._id}" class="px-3 py-2 rounded-lg border border-luxuryGold/20 text-xs font-bold tracking-widest text-luxuryGold hover:bg-luxuryGold/10">
+              MANAGE
+            </button>
+          </div>
+
+          <div id="chat-manage-${group._id}" class="hidden mt-5 border-t border-white/5 pt-4 space-y-4">
+            <div>
+              <div class="text-xs font-bold tracking-widest text-gray-400 uppercase mb-2">Invite Student</div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <select data-role="chat-invite-select" data-group-id="${group._id}" class="w-full p-3 rounded-xl bg-luxuryDark border border-luxuryGold/20 text-white">
+                  <option value="">Select youth...</option>
+                  ${cachedStudents.map(s => `<option value="${s._id}">${escapeHtml((s.firstName||'') + ' ' + (s.lastName||''))} (${escapeHtml(s.email||'')})</option>`).join('')}
+                </select>
+                <button data-action="chat-invite" data-group-id="${group._id}" class="w-full py-3 rounded-xl bg-luxuryGold text-black text-xs font-black tracking-widest hover:bg-white">
+                  INVITE
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">Invite adds the youth directly as an active member.</p>
+            </div>
+
+            <div>
+              <div class="text-xs font-bold tracking-widest text-gray-400 uppercase mb-2">Members</div>
+              <div data-role="chat-members" data-group-id="${group._id}" class="space-y-2 text-sm text-gray-400">
+                <div class="text-gray-500">Click MANAGE then LOAD MEMBERS.</div>
+              </div>
+              <button data-action="chat-load-members" data-group-id="${group._id}" class="mt-3 px-4 py-2 rounded-lg border border-luxuryGold/20 text-xs font-bold tracking-widest text-luxuryGold hover:bg-luxuryGold/10">
+                LOAD MEMBERS
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchChatGroups() {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/chat/groups`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to load chat groups');
+      return Array.isArray(data.data) ? data.data : [];
+    }
+
+    async function renderChatGroups() {
+      const list = document.getElementById('chatGroupsList');
+      const countEl = document.getElementById('chatGroupsCount');
+      list.innerHTML = '<div class="text-center text-gray-500 py-10">Loading chat groups...</div>';
+
+      try {
+        if (cachedStudents.length === 0) await fetchStudents();
+        const groups = await fetchChatGroups();
+
+        // Show only school groups here (national groups are still visible in chat.html)
+        const schoolGroups = groups.filter(g => g.visibility !== 'national');
+
+        countEl.textContent = `${schoolGroups.length}`;
+        if (schoolGroups.length === 0) {
+          list.innerHTML = '<div class="text-center text-gray-500 py-10">No chat groups yet. Create your first school chat group.</div>';
+          return;
+        }
+        list.innerHTML = schoolGroups.map(chatGroupCardHtml).join('');
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = `<div class="text-center text-red-400 py-10">${err.message || 'Failed to load chat groups'}</div>`;
+      }
+    }
+
+    document.getElementById('refreshChatGroupsBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      renderChatGroups();
+    });
+
+    document.getElementById('createChatGroupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      const name = document.getElementById('chatGroupName').value.trim();
+      const description = document.getElementById('chatGroupDescription').value.trim();
+      const joinPolicy = document.getElementById('chatJoinPolicy').value;
+      const isDiscoverable = document.getElementById('chatDiscoverable').checked;
+
+      try {
+        const res = await fetch(`${API_URL}/chat/groups`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ name, description, joinPolicy, isDiscoverable, visibility: 'school_only' })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to create chat group');
+        e.target.reset();
+        renderChatGroups();
+      } catch (err) {
+        alert(err.message || 'Error creating chat group');
+      }
+    });
+
+    document.getElementById('chatGroupsList').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+
+      const action = btn.getAttribute('data-action');
+      const groupId = btn.getAttribute('data-group-id');
+      const token = localStorage.getItem('token');
+
+      if (action === 'toggle-chat-manage') {
+        document.getElementById(`chat-manage-${groupId}`)?.classList.toggle('hidden');
+        return;
+      }
+
+      if (action === 'chat-invite') {
+        const select = document.querySelector(`select[data-role="chat-invite-select"][data-group-id="${groupId}"]`);
+        const userId = select?.value;
+        if (!userId) return alert('Select a youth first');
+
+        try {
+          const res = await fetch(`${API_URL}/chat/groups/${groupId}/invite`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ userId })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || 'Failed to invite');
+          alert('Invited successfully');
+        } catch (err) {
+          alert(err.message || 'Error inviting user');
+        }
+        return;
+      }
+
+      if (action === 'chat-load-members') {
+        const container = document.querySelector(`div[data-role="chat-members"][data-group-id="${groupId}"]`);
+        if (!container) return;
+        container.innerHTML = '<div class="text-gray-500">Loading members...</div>';
+
+        try {
+          const res = await fetch(`${API_URL}/chat/groups/${groupId}/members`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || 'Failed to load members');
+
+          const members = Array.isArray(data.data) ? data.data : [];
+          if (members.length === 0) {
+            container.innerHTML = '<div class="text-gray-500">No members yet.</div>';
+            return;
+          }
+
+          container.innerHTML = members.map((m) => {
+            const u = m.user || {};
+            const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email || 'User';
+            return `
+              <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-black/20 border border-white/5">
+                <div class="min-w-0">
+                  <div class="text-white font-bold text-sm truncate">${escapeHtml(name)}</div>
+                  <div class="text-[11px] text-gray-500 truncate">${escapeHtml(u.email || '')} • ${escapeHtml(m.roleInGroup)} • ${escapeHtml(m.status)}</div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button data-action="chat-remove-member" data-group-id="${groupId}" data-user-id="${u._id}" class="text-xs font-bold tracking-widest text-red-400 hover:text-red-300">REMOVE</button>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } catch (err) {
+          container.innerHTML = `<div class="text-red-400">${escapeHtml(err.message || 'Failed')}</div>`;
+        }
+        return;
+      }
+
+      if (action === 'chat-remove-member') {
+        const userId = btn.getAttribute('data-user-id');
+        if (!confirm('Remove this member from the chat group?')) return;
+        try {
+          const res = await fetch(`${API_URL}/chat/groups/${groupId}/members/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.message || 'Failed to remove member');
+          // Refresh members list
+          const reloadBtn = document.querySelector(`button[data-action="chat-load-members"][data-group-id="${groupId}"]`);
+          reloadBtn?.click();
+        } catch (err) {
+          alert(err.message || 'Error removing member');
+        }
+      }
+    });
+
+    // ────────────────────────────────────────────────
+    //  Powerful Image Upload Logic
+    // ────────────────────────────────────────────────
+    const posterInput = document.getElementById('posterInput');
+    const dropZone = document.getElementById('posterDropZone');
+    const preview = document.getElementById('posterPreview');
+    const previewImg = preview.querySelector('img');
+    const changeBtn = document.getElementById('changePoster');
+    const removeBtn = document.getElementById('removePoster');
+
+    // Trigger file input
+    dropZone.addEventListener('click', () => posterInput.click());
+    changeBtn.addEventListener('click', () => posterInput.click());
+
+    // Handle file selection
+    posterInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                preview.classList.remove('hidden');
+                dropZone.classList.add('hidden');
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    // Remove file
+    removeBtn.addEventListener('click', () => {
+        posterInput.value = '';
+        preview.classList.add('hidden');
+        dropZone.classList.remove('hidden');
+    });
+
+    // ────────────────────────────────────────────────
+    //  Form Submission (FormData for File Upload)
+    // ────────────────────────────────────────────────
+    document.getElementById('eventForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerText;
+      
+      // Show loading state
+      submitBtn.innerText = 'UPLOADING...';
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      const formData = new FormData(e.target);
+      // Note: No need to Object.fromEntries() because we send FormData directly for file support
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Please login as admin first');
+          return;
+        }
+
+        const res = await fetch('http://localhost:5000/api/events', {
+          method: 'POST',
+          headers: {
+            // 'Content-Type': 'multipart/form-data', // <--- DO NOT SET THIS MANUALLY! Browser sets it with boundary.
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('Event published successfully - Imana iguhe umugisha!');
+          e.target.reset();
+          // Reset preview
+          preview.classList.add('hidden');
+          dropZone.classList.remove('hidden');
+        } else {
+          const err = await res.json();
+          alert(err.message || 'Failed to publish - Check if you are admin');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Network error - Please check backend server');
+      } finally {
+        // Restore button
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      }
+    });
+</script>
+
+</body>
+</html>

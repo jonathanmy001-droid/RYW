@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pastor Dashboard | Rwandan Youth Worship</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxuryGold: '#D4AF37',
+            luxuryDark: '#050F0D',
+            cardDark: '#0B1F1A',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-luxuryDark text-gray-100">
+  <header class="max-w-5xl mx-auto px-6 py-10">
+    <h1 class="text-3xl sm:text-4xl font-bold text-luxuryGold">Pastor Dashboard</h1>
+    <p id="whoami" class="mt-2 text-gray-400">Loading profile...</p>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 pb-16">
+    <section class="bg-cardDark/70 border border-luxuryGold/15 rounded-2xl p-6">
+      <h2 class="text-xl font-semibold">School Snapshot</h2>
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="rounded-xl border border-luxuryGold/10 p-4">
+          <div class="text-xs text-gray-400 uppercase tracking-widest">Students</div>
+          <div id="stat-students" class="mt-2 text-2xl font-bold text-luxuryGold">--</div>
+        </div>
+        <div class="rounded-xl border border-luxuryGold/10 p-4">
+          <div class="text-xs text-gray-400 uppercase tracking-widest">Active (7d)</div>
+          <div id="stat-active" class="mt-2 text-2xl font-bold text-luxuryGold">--</div>
+        </div>
+        <div class="rounded-xl border border-luxuryGold/10 p-4">
+          <div class="text-xs text-gray-400 uppercase tracking-widest">Groups</div>
+          <div id="stat-groups" class="mt-2 text-2xl font-bold text-luxuryGold">--</div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="../youth.html" class="px-5 py-2 rounded-full bg-luxuryGold text-black font-semibold">Go to Youth Hub</a>
+        <a href="./school-admin.html" class="px-5 py-2 rounded-full border border-luxuryGold/40 text-luxuryGold">School Admin</a>
+        <a href="./super-admin.html" class="px-5 py-2 rounded-full border border-luxuryGold/40 text-luxuryGold">Super Admin</a>
+      </div>
+    </section>
+
+    <section class="mt-6 bg-cardDark/70 border border-luxuryGold/15 rounded-2xl p-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">Students</h2>
+        <button id="refreshStudentsBtn" class="text-xs font-bold tracking-widest text-luxuryGold hover:underline">REFRESH</button>
+      </div>
+      <div class="mt-4 overflow-x-auto">
+        <table class="w-full text-left text-sm text-gray-300">
+          <thead class="text-gray-400 text-xs uppercase tracking-widest">
+            <tr>
+              <th class="py-2 pr-4">Name</th>
+              <th class="py-2 pr-4">Email</th>
+              <th class="py-2 pr-4">Streak</th>
+              <th class="py-2 pr-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="studentsBody" class="divide-y divide-white/5">
+            <tr><td colspan="4" class="py-6 text-center text-gray-500">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mt-6 bg-cardDark/70 border border-luxuryGold/15 rounded-2xl p-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">Prayer Groups</h2>
+        <button id="refreshGroupsBtn" class="text-xs font-bold tracking-widest text-luxuryGold hover:underline">REFRESH</button>
+      </div>
+      <div id="groupsWrap" class="mt-4 space-y-3 text-gray-300">
+        <div class="py-6 text-center text-gray-500">Loading...</div>
+      </div>
+    </section>
+
+    <section class="mt-6 bg-cardDark/70 border border-luxuryGold/15 rounded-2xl p-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-semibold">My Events</h2>
+        <button id="refreshEventsBtn" class="text-xs font-bold tracking-widest text-luxuryGold hover:underline">REFRESH</button>
+      </div>
+      <div id="eventsWrap" class="mt-4 space-y-3 text-gray-300">
+        <div class="py-6 text-center text-gray-500">Loading...</div>
+      </div>
+    </section>
+
+    <section class="mt-6 text-sm text-gray-500">
+      <button id="logoutBtn" class="underline hover:text-gray-300">Sign out</button>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = '../login.html';
+    }
+
+    async function loadMe() {
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to load profile');
+
+        const user = data.user || {};
+        localStorage.setItem('user', JSON.stringify(user));
+
+        const schoolName = user?.school?.name || 'School';
+        const province = user?.school?.province || 'Province';
+        document.getElementById('whoami').textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim() + ` • ${schoolName} • ${province}`;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('whoami').textContent = 'Failed to load profile';
+      }
+    }
+
+    async function loadSchoolStats() {
+      try {
+        const res = await fetch(`${API_URL}/school/stats`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to load stats');
+
+        document.getElementById('stat-students').textContent = data.totalStudents ?? '--';
+        document.getElementById('stat-active').textContent = data.activeStudents ?? '--';
+        document.getElementById('stat-groups').textContent = data.groupsCount ?? '--';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    loadMe();
+    loadSchoolStats();
+
+    async function loadStudents() {
+      const body = document.getElementById('studentsBody');
+      body.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-gray-500">Loading...</td></tr>';
+      try {
+        const res = await fetch(`${API_URL}/school/students`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to load students');
+        const students = Array.isArray(data) ? data : [];
+        if (students.length === 0) {
+          body.innerHTML = '<tr><td colspan="4" class="py-6 text-center text-gray-500">No students found.</td></tr>';
+          return;
+        }
+        body.innerHTML = students.slice(0, 20).map(s => {
+          const status = s.isActive ? 'Active' : 'Inactive';
+          const statusClass = s.isActive ? 'text-green-300' : 'text-gray-400';
+          return `
+            <tr>
+              <td class="py-3 pr-4 text-white">${s.firstName} ${s.lastName}</td>
+              <td class="py-3 pr-4 text-gray-400">${s.email}</td>
+              <td class="py-3 pr-4 text-luxuryGold">${s.devotionStreak || 0}d</td>
+              <td class="py-3 pr-4 ${statusClass}">${status}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+        body.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-red-300">${err.message || 'Failed to load students'}</td></tr>`;
+      }
+    }
+
+    async function loadGroups() {
+      const wrap = document.getElementById('groupsWrap');
+      wrap.innerHTML = '<div class="py-6 text-center text-gray-500">Loading...</div>';
+      try {
+        const res = await fetch(`${API_URL}/school/groups`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to load groups');
+        const groups = Array.isArray(data) ? data : [];
+        if (groups.length === 0) {
+          wrap.innerHTML = '<div class="py-6 text-center text-gray-500">No groups yet.</div>';
+          return;
+        }
+        wrap.innerHTML = groups.slice(0, 10).map(g => `
+          <div class="border border-luxuryGold/10 rounded-xl p-4 bg-black/10">
+            <div class="text-white font-semibold">${g.name}</div>
+            <div class="text-xs text-gray-500 mt-1">${g.description || ''}</div>
+            <div class="text-xs text-gray-400 mt-2">${(g.members || []).length} members</div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+        wrap.innerHTML = `<div class="py-6 text-center text-red-300">${err.message || 'Failed to load groups'}</div>`;
+      }
+    }
+
+    async function loadMyEvents() {
+      const wrap = document.getElementById('eventsWrap');
+      wrap.innerHTML = '<div class="py-6 text-center text-gray-500">Loading...</div>';
+      try {
+        const res = await fetch(`${API_URL}/events/mine`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message || 'Failed to load events');
+        const events = data.data || [];
+        if (events.length === 0) {
+          wrap.innerHTML = '<div class="py-6 text-center text-gray-500">No events posted yet.</div>';
+          return;
+        }
+        wrap.innerHTML = events.slice(0, 10).map(ev => `
+          <div class="border border-luxuryGold/10 rounded-xl p-4 bg-black/10">
+            <div class="text-white font-semibold">${ev.title}</div>
+            <div class="text-xs text-gray-400 mt-1">${new Date(ev.dateTime).toLocaleString()}</div>
+            <div class="text-xs text-gray-500 mt-2">${ev.description || ''}</div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+        wrap.innerHTML = `<div class="py-6 text-center text-red-300">${err.message || 'Failed to load events'}</div>`;
+      }
+    }
+
+    document.getElementById('refreshStudentsBtn').addEventListener('click', loadStudents);
+    document.getElementById('refreshGroupsBtn').addEventListener('click', loadGroups);
+    document.getElementById('refreshEventsBtn').addEventListener('click', loadMyEvents);
+
+    loadStudents();
+    loadGroups();
+    loadMyEvents();
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '../login.html';
+    });
+  </script>
+</body>
+</html>

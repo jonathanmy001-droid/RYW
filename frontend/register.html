@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Join | Rwandan Youth Worship</title>
+  
+  <!-- Tailwind CDN + custom colors -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxuryGold: '#D4AF37',
+            luxuryDark: '#0B1F1A',
+            deepBlack: '#050A0A',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #050A0A, #0B1F1A);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    h1, h2 { font-family: 'Playfair Display', serif; }
+    
+    .animated-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 30% 70%, rgba(212,175,55,0.07) 0%, transparent 45%),
+                  radial-gradient(circle at 70% 30%, rgba(212,175,55,0.05) 0%, transparent 55%);
+    }
+    .particle {
+      position: absolute;
+      background: rgba(212,175,55,0.35);
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(212,175,55,0.5);
+      animation: float 28s infinite linear;
+      pointer-events: none;
+    }
+    @keyframes float {
+      0%   { transform: translateY(110vh) scale(0.15); opacity: 0; }
+      15%  { opacity: 0.7; }
+      85%  { opacity: 0.7; }
+      100% { transform: translateY(-160vh) scale(0.7); opacity: 0; }
+    }
+    
+    .register-card {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.4s;
+      width: 100%;
+      max-width: 480px;
+      background: rgba(5,10,10,0.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 1.5rem;
+      padding: 2.5rem 1.75rem;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+    }
+    
+    @media (min-width: 640px) {
+      .register-card {
+        padding: 3.5rem 2.5rem;
+        max-width: 520px;
+      }
+    }
+    
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 4px rgba(212,175,55,0.22);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="animated-bg absolute inset-0"></div>
+
+  <!-- Floating golden particles -->
+  <script>
+    const bg = document.querySelector('.animated-bg');
+    for (let i = 0; i < 16; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 5 + 2.5;
+      p.style.width = p.style.height = `${size}px`;
+      p.style.left = `${Math.random() * 100}%`;
+      p.style.top = `${Math.random() * 100}%`;
+      p.style.animationDelay = `${Math.random() * 18}s`;
+      p.style.animationDuration = `${24 + Math.random() * 35}s`;
+      bg.appendChild(p);
+    }
+  </script>
+
+  <!-- Centered Register Card – matches login exactly -->
+  <div class="register-card relative z-10">
+    
+    <!-- Subtle top glow -->
+    <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-72 bg-luxuryGold/8 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="text-center mb-10">
+      <h1 class="text-4xl sm:text-5xl font-bold text-luxuryGold tracking-wide drop-shadow-md">
+        Join the Family
+      </h1>
+      <p class="mt-3 text-base sm:text-lg text-gray-300">
+        Step into a movement of Rwandan youth worshipping Imana together
+      </p>
+    </div>
+
+    <form onsubmit="registerUser(event)" id="registerForm" class="space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1.5">I am a...</label>
+        <select id="role" required 
+                class="w-full px-4 py-3.5 bg-black/35 border border-gray-600 rounded-lg text-white appearance-none focus:border-luxuryGold transition-all cursor-pointer">
+          <option value="youth" selected>Youth / Student</option>
+          <option value="school_admin">School Admin (Requires Approval)</option>
+          <option value="pastor">Pastor / Mentor (Requires Approval)</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">First Name</label>
+          <input id="firstName" type="text" required 
+                 class="w-full px-4 py-3.5 bg-black/35 border border-gray-600 rounded-lg text-white placeholder-gray-500 text-base focus:border-luxuryGold transition-all" 
+                 placeholder="First name" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-1.5">Last Name</label>
+          <input id="lastName" type="text" required 
+                 class="w-full px-4 py-3.5 bg-black/35 border border-gray-600 rounded-lg text-white placeholder-gray-500 text-base focus:border-luxuryGold transition-all" 
+                 placeholder="Last name" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1.5">Username</label>
+        <input id="username" type="text" required 
+               class="w-full px-4 py-3.5 bg-black/35 border border-gray-600 rounded-lg text-white placeholder-gray-500 text-base focus:border-luxuryGold transition-all" 
+               placeholder="Choose a username" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+        <input id="email" type="email" required 
+               class="w-full px-4 py-3.5 bg-black/35 border border-gray-600 rounded-lg text-white placeholder-gray-500 text-base focus:border-luxuryGold transition-all" 
+               placeholder="you@example.com" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
+        <input id="password" type="password" required 
+               class="w-full px-4 py-3.5 bg-black/35 border border-gray-600 rounded-lg text-white placeholder-gray-500 text-base focus:border-luxuryGold transition-all" 
+               placeholder="Create strong password" />
+      </div>
+
+      <div>
+  <label class="block text-sm font-medium text-gray-300 mb-1.5">Select Your School</label>
+  <select id="school" required 
+          class="w-full px-4 py-3.5 bg-black/35 border border-gray-600 rounded-lg text-white appearance-none focus:border-luxuryGold transition-all cursor-pointer">
+    <option value="" disabled selected>Choose your school...</option>
+  </select>
+</div>
+
+      <div class="flex items-center text-sm">
+        <input type="checkbox" id="terms" required class="mr-2 accent-luxuryGold h-4 w-4" />
+        <label for="terms" class="text-gray-400">
+          I agree to the <a href="#" class="text-luxuryGold hover:underline">Terms & Community Guidelines</a>
+        </label>
+      </div>
+
+      <button type="submit" 
+              class="w-full py-4 bg-luxuryGold text-black font-bold text-lg rounded-full shadow-xl hover:bg-luxuryGold/90 hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
+        Join the Movement
+      </button>
+    </form>
+
+    <p class="mt-10 text-center text-gray-400 text-sm sm:text-base">
+      Already part of the family? <a href="login.html" class="text-luxuryGold hover:underline font-medium">Login here</a>
+    </p>
+  </div>
+
+  <script>
+  // ────────────────────────────────────────────────
+  //  1. Load real schools from backend when page opens
+  // ────────────────────────────────────────────────
+  async function loadSchools() {
+    const schoolDropdown = document.getElementById('school');
+    
+    // Clear existing options (except placeholder)
+    schoolDropdown.innerHTML = '<option value="" disabled selected>Choose your school...</option>';
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/schools');
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+
+      const schools = await response.json();
+
+      if (schools.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.disabled = true;
+        option.textContent = 'No schools available yet – contact admin';
+        schoolDropdown.appendChild(option);
+        return;
+      }
+
+      schools.forEach(school => {
+        const option = document.createElement('option');
+        option.value = school._id;                     // Send real _id to backend
+        option.textContent = `${school.name} (${school.province})`;
+        schoolDropdown.appendChild(option);
+      });
+
+      console.log(`Loaded ${schools.length} schools from database`);
+    } catch (error) {
+      console.error('Failed to load schools:', error);
+      
+      const option = document.createElement('option');
+      option.value = '';
+      option.disabled = true;
+      option.textContent = 'Error loading schools – check connection';
+      schoolDropdown.appendChild(option);
+      
+      alert('Could not load schools. Make sure backend is running and MongoDB is connected.');
+    }
+  }
+
+  // Call when page loads
+  window.addEventListener('load', loadSchools);
+
+  // ────────────────────────────────────────────────
+  //  2. Real registration + clean reset after success
+  // ────────────────────────────────────────────────
+  async function registerUser(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = {
+      firstName: document.getElementById('firstName').value.trim(),
+      lastName: document.getElementById('lastName').value.trim(),
+      username: document.getElementById('username').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      password: document.getElementById('password').value,
+      schoolId: document.getElementById('school').value,
+      role: document.getElementById('role').value // Get the selected role
+    };
+
+    // Basic frontend validation
+    if (!formData.schoolId) {
+      alert('Please select your school from the list.');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      alert('Password must be at least 6 characters long for security.');
+      return;
+    }
+
+    console.log("Sending registration data:", formData);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Registration failed');
+      }
+
+      // Handle different responses based on role
+      if (result.token) {
+        // This is a 'youth' user, auto-approved
+        alert(`Praise God, ${formData.firstName}! 🎉\nYour account is ready. You can now login!`);
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('user', JSON.stringify(result.user));
+        setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+      } else {
+        // This is a 'school_admin' or 'pastor', pending approval
+        alert(`Registration Successful, ${formData.firstName}!\n\n${result.message}\n\nYou will be able to log in once a Super Admin approves your account.`);
+        setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+      }
+
+      form.reset();
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('Sorry — ' + error.message + '\nPlease check your details and try again.');
+    }
+  }
+
+  // Attach submit handler
+  // The form has an onsubmit attribute, so this is not needed.
+</script>
+</body>
+</html>

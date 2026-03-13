@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Groups | RYW</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0b1014',
+            panel: '#121c23',
+            panel2: '#17242c',
+            line: 'rgba(255,255,255,0.08)',
+            gold: '#D4AF37',
+            green: '#25D366',
+          },
+          boxShadow: {
+            glow: '0 0 0 1px rgba(212,175,55,0.16), 0 0 28px rgba(212,175,55,0.16)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0b1014; --noise: rgba(255,255,255,0.04); }
+    body { font-family: Inter, sans-serif; background: var(--bg); color: #e9edef; }
+    .title { font-family: Fraunces, serif; letter-spacing: 0.2px; }
+    .noise:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 18% 12%, rgba(212,175,55,0.08), transparent 40%),
+        radial-gradient(circle at 74% 18%, rgba(37,211,102,0.08), transparent 42%),
+        radial-gradient(circle at 44% 86%, rgba(212,175,55,0.06), transparent 44%),
+        linear-gradient(to bottom, rgba(0,0,0,0.25), rgba(0,0,0,0.65)),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, var(--noise) 3px);
+      mix-blend-mode: screen;
+      opacity: 0.7;
+    }
+    .h-messages { height: calc(100vh - 176px); }
+    @media (max-width: 768px) {
+      .h-messages { height: calc(100vh - 212px); }
+    }
+  </style>
+</head>
+
+<body class="noise">
+  <header class="sticky top-0 z-30 border-b border-line bg-ink/90 backdrop-blur px-4 py-3">
+    <div class="max-w-7xl mx-auto flex items-center gap-3">
+      <a href="youth.html" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-panel2 border border-line hover:shadow-glow transition">
+        <span class="text-green text-xl leading-none">&larr;</span>
+      </a>
+
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-2 min-w-0">
+          <h1 class="title text-xl font-bold truncate">Chat Groups</h1>
+          <span id="connDot" class="w-2 h-2 rounded-full bg-gray-600"></span>
+        </div>
+        <p id="subline" class="text-xs text-gray-400 truncate">Loading...</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="createBtn" class="hidden px-3 py-2 rounded-xl bg-gold text-black text-xs font-black tracking-widest hover:opacity-90 transition">
+          CREATE
+        </button>
+        <button id="refreshBtn" class="px-3 py-2 rounded-xl border border-line bg-panel2 text-xs font-bold tracking-widest text-gold hover:bg-panel transition">
+          REFRESH
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-0">
+    <aside class="md:col-span-4 border-r border-line bg-panel2/50">
+      <div class="p-4 border-b border-line">
+        <div class="flex items-center gap-2">
+          <input id="search" class="w-full bg-ink/60 border border-line rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gold/30" placeholder="Search groups..." />
+        </div>
+
+        <div class="mt-3 flex items-center gap-2">
+          <button data-tab="my" class="tabBtn flex-1 px-3 py-2 rounded-xl text-xs font-black tracking-widest border border-line bg-panel text-white">
+            MY
+          </button>
+          <button data-tab="discover" class="tabBtn flex-1 px-3 py-2 rounded-xl text-xs font-black tracking-widest border border-line bg-ink/40 text-gray-300 hover:bg-panel transition">
+            DISCOVER
+          </button>
+        </div>
+
+        <p class="mt-3 text-[11px] text-gray-400">
+          Invite-only groups show as <span class="text-gray-200 font-bold">INVITE</span>. Open/request groups can be joined.
+        </p>
+      </div>
+
+      <div id="groupsList" class="overflow-y-auto" style="height: calc(100vh - 196px);">
+        <div class="p-6 text-sm text-gray-400">Loading groups...</div>
+      </div>
+    </aside>
+
+    <section class="md:col-span-8 flex flex-col bg-ink/30">
+      <div class="p-4 border-b border-line bg-ink/40 backdrop-blur">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-panel2 border border-line flex items-center justify-center text-gold font-black">
+            <span id="avatarLetter">G</span>
+          </div>
+
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <h2 id="groupTitle" class="text-lg font-bold truncate">Select a group</h2>
+              <span id="groupBadge" class="hidden text-[10px] font-black tracking-widest px-2 py-1 rounded-full bg-panel2 border border-line text-gray-200"></span>
+            </div>
+            <p id="groupMeta" class="text-xs text-gray-400 truncate">School groups and national groups</p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="membersBtn" class="hidden px-3 py-2 rounded-xl border border-line bg-panel2 text-xs font-bold tracking-widest text-white hover:bg-panel transition">
+              MEMBERS
+            </button>
+            <button id="joinBtn" class="hidden px-3 py-2 rounded-xl bg-green text-black text-xs font-black tracking-widest hover:opacity-90 transition">
+              JOIN
+            </button>
+          </div>
+        </div>
+
+        <div id="statusRow" class="mt-3 hidden">
+          <div class="text-xs text-gray-300 bg-panel2 border border-line rounded-2xl px-4 py-3">
+            <span id="statusText"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="messages" class="h-messages overflow-y-auto p-4 space-y-2">
+        <div class="text-sm text-gray-400">Select a group to see messages.</div>
+      </div>
+
+      <footer class="p-4 border-t border-line bg-ink/60 backdrop-blur">
+        <div class="flex items-center gap-2">
+          <input
+            id="messageInput"
+            type="text"
+            placeholder="Type a message..."
+            class="flex-1 bg-panel2 border border-line rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-gold/30"
+            autocomplete="off"
+            disabled
+          />
+          <button id="sendBtn" class="px-5 py-3 rounded-2xl bg-gold text-black text-sm font-black tracking-widest disabled:opacity-40 disabled:cursor-not-allowed">
+            SEND
+          </button>
+        </div>
+        <p class="mt-2 text-[11px] text-gray-500">
+          Safety: your school groups are scoped. Pastor and school admin can moderate.
+        </p>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Members drawer -->
+  <div id="membersDrawer" class="hidden fixed inset-0 z-40">
+    <div class="absolute inset-0 bg-black/70" data-close="drawer"></div>
+    <div class="absolute right-0 top-0 h-full w-full max-w-md bg-panel border-l border-line p-4 overflow-y-auto">
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <h3 class="title text-lg font-bold truncate">Members</h3>
+          <p id="membersSub" class="text-xs text-gray-400 truncate">Loading...</p>
+        </div>
+        <button class="px-3 py-2 rounded-xl border border-line bg-panel2 text-xs font-bold tracking-widest" data-close="drawer">CLOSE</button>
+      </div>
+      <div id="membersList" class="mt-4 space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- Create group modal -->
+  <div id="createModal" class="hidden fixed inset-0 z-40">
+    <div class="absolute inset-0 bg-black/70" data-close="modal"></div>
+    <div class="absolute inset-x-0 top-10 mx-auto w-[92%] max-w-lg bg-panel border border-line rounded-3xl p-5 shadow-glow">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="title text-lg font-bold">Create Chat Group</h3>
+        <button class="px-3 py-2 rounded-xl border border-line bg-panel2 text-xs font-bold tracking-widest" data-close="modal">CLOSE</button>
+      </div>
+
+      <form id="createForm" class="mt-4 space-y-3">
+        <div>
+          <label class="block text-xs font-black tracking-widest text-gold mb-1">NAME</label>
+          <input id="newName" class="w-full bg-ink/50 border border-line rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-gold/30" required />
+        </div>
+        <div>
+          <label class="block text-xs font-black tracking-widest text-gold mb-1">DESCRIPTION</label>
+          <textarea id="newDesc" rows="3" class="w-full bg-ink/50 border border-line rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-gold/30"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-black tracking-widest text-gold mb-1">JOIN POLICY</label>
+            <select id="newJoinPolicy" class="w-full bg-ink/50 border border-line rounded-2xl px-4 py-3 text-sm outline-none">
+              <option value="invite_only">invite_only</option>
+              <option value="request_to_join">request_to_join</option>
+              <option value="open">open</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-black tracking-widest text-gold mb-1">VISIBILITY</label>
+            <select id="newVisibility" class="w-full bg-ink/50 border border-line rounded-2xl px-4 py-3 text-sm outline-none">
+              <option value="school_only">school_only</option>
+              <option value="national" disabled>national (super admin)</option>
+            </select>
+          </div>
+        </div>
+        <label class="flex items-center gap-2 text-sm text-gray-300">
+          <input id="newDiscoverable" type="checkbox" class="w-4 h-4 accent-gold" checked />
+          Discoverable in lists
+        </label>
+        <button class="w-full mt-2 px-5 py-3 rounded-2xl bg-gold text-black text-sm font-black tracking-widest">
+          CREATE
+        </button>
+        <p id="createErr" class="text-xs text-red-300 hidden"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    const el = {
+      connDot: document.getElementById('connDot'),
+      subline: document.getElementById('subline'),
+      refreshBtn: document.getElementById('refreshBtn'),
+      createBtn: document.getElementById('createBtn'),
+      search: document.getElementById('search'),
+      groupsList: document.getElementById('groupsList'),
+      groupTitle: document.getElementById('groupTitle'),
+      groupMeta: document.getElementById('groupMeta'),
+      groupBadge: document.getElementById('groupBadge'),
+      avatarLetter: document.getElementById('avatarLetter'),
+      statusRow: document.getElementById('statusRow'),
+      statusText: document.getElementById('statusText'),
+      messages: document.getElementById('messages'),
+      messageInput: document.getElementById('messageInput'),
+      sendBtn: document.getElementById('sendBtn'),
+      joinBtn: document.getElementById('joinBtn'),
+      membersBtn: document.getElementById('membersBtn'),
+      membersDrawer: document.getElementById('membersDrawer'),
+      membersSub: document.getElementById('membersSub'),
+      membersList: document.getElementById('membersList'),
+      createModal: document.getElementById('createModal'),
+      createForm: document.getElementById('createForm'),
+      newName: document.getElementById('newName'),
+      newDesc: document.getElementById('newDesc'),
+      newJoinPolicy: document.getElementById('newJoinPolicy'),
+      newVisibility: document.getElementById('newVisibility'),
+      newDiscoverable: document.getElementById('newDiscoverable'),
+      createErr: document.getElementById('createErr'),
+    };
+
+    let me = null;
+    let socket = null;
+    let groups = [];
+    let tab = 'my';
+    let active = null;
+    let activeMembership = null;
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    async function api(path, opts = {}) {
+      const res = await fetch(`${API_URL}${path}`, {
+        ...opts,
+        headers: {
+          ...(opts.headers || {}),
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': opts.body && !(opts.body instanceof FormData) ? 'application/json' : (opts.headers && opts.headers['Content-Type']) || undefined
+        }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || 'Request failed');
+      return data;
+    }
+
+    function setStatus(text) {
+      if (!text) {
+        el.statusRow.classList.add('hidden');
+        el.statusText.textContent = '';
+        return;
+      }
+      el.statusText.textContent = text;
+      el.statusRow.classList.remove('hidden');
+    }
+
+    function setComposerEnabled(enabled) {
+      el.messageInput.disabled = !enabled;
+      el.sendBtn.disabled = !enabled;
+      el.messageInput.placeholder = enabled ? 'Type a message...' : 'Join this group to chat...';
+    }
+
+    function roleCanCreate() {
+      return me && (me.role === 'school_admin' || me.role === 'pastor' || me.role === 'super_admin');
+    }
+
+    function computeTag(g) {
+      if (g.membership) return g.membership.status === 'muted' ? 'MUTED' : 'MEMBER';
+      if (g.joinPolicy === 'open') return 'OPEN';
+      if (g.joinPolicy === 'request_to_join') return 'REQUEST';
+      return 'INVITE';
+    }
+
+    function isInMyTab(g) {
+      if (tab === 'my') return !!g.membership;
+      return !g.membership;
+    }
+
+    function renderGroups() {
+      const q = String(el.search.value || '').trim().toLowerCase();
+      const filtered = groups
+        .filter(isInMyTab)
+        .filter(g => !q || String(g.name || '').toLowerCase().includes(q))
+        .sort((a, b) => {
+          const ta = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
+          const tb = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+          return tb - ta;
+        });
+
+      if (!filtered.length) {
+        el.groupsList.innerHTML = `<div class="p-6 text-sm text-gray-400">${tab === 'my' ? 'No joined groups yet.' : 'No discoverable groups right now.'}</div>`;
+        return;
+      }
+
+      el.groupsList.innerHTML = filtered.map(g => {
+        const activeCls = active && String(active._id) === String(g._id) ? 'ring-2 ring-gold/25 bg-ink/30' : 'hover:bg-ink/25';
+        const tag = computeTag(g);
+        const meta = g.visibility === 'national' ? 'National' : 'School';
+        const last = g.lastMessageAt ? new Date(g.lastMessageAt).toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+        return `
+          <button data-group-id="${g._id}" class="w-full text-left px-4 py-4 border-b border-line/70 ${activeCls} transition">
+            <div class="flex items-start gap-3">
+              <div class="w-11 h-11 rounded-2xl bg-ink/40 border border-line flex items-center justify-center text-gold font-black">
+                ${escapeHtml((g.name || 'G').slice(0, 1).toUpperCase())}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="font-bold truncate">${escapeHtml(g.name)}</div>
+                  <div class="text-[10px] font-black tracking-widest px-2 py-1 rounded-full bg-ink/40 border border-line text-gray-200">${tag}</div>
+                </div>
+                <div class="text-xs text-gray-400 truncate">${escapeHtml(g.description || '')}</div>
+                <div class="mt-2 flex items-center justify-between gap-2 text-[11px] text-gray-500">
+                  <span>${meta}</span>
+                  <span>${escapeHtml(last)}</span>
+                </div>
+              </div>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function addBubble(msg) {
+      const sender = msg.sender || {};
+      const mine = me && String(sender._id || sender) === String(me._id);
+      const wrap = document.createElement('div');
+      wrap.className = 'flex ' + (mine ? 'justify-end' : 'justify-start');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'max-w-[82%] px-4 py-3 rounded-2xl text-sm border border-line ' + (mine ? 'bg-green/10' : 'bg-panel2');
+      const nameLine = mine ? '' : `<div class="text-[11px] text-gold font-black tracking-widest mb-1">${escapeHtml(((sender.firstName||'') + ' ' + (sender.lastName||'')).trim() || sender.email || 'Member')}</div>`;
+      const time = new Date(msg.createdAt || Date.now()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      bubble.innerHTML = `${nameLine}<div>${escapeHtml(msg.text)}</div><div class="text-[10px] text-gray-500 mt-2 text-right">${time}</div>`;
+
+      wrap.appendChild(bubble);
+      el.messages.appendChild(wrap);
+      el.messages.scrollTop = el.messages.scrollHeight;
+    }
+
+    async function loadMe() {
+      const data = await api('/auth/me', { method: 'GET' });
+      me = data.user;
+      el.subline.textContent = `${me.firstName || ''} ${me.lastName || ''}`.trim() || me.email || 'Logged in';
+
+      if (roleCanCreate()) el.createBtn.classList.remove('hidden');
+      if (me.role === 'super_admin') {
+        const opt = [...el.newVisibility.options].find(o => o.value === 'national');
+        if (opt) opt.disabled = false;
+      }
+    }
+
+    async function loadGroups() {
+      const data = await api('/chat/groups', { method: 'GET' });
+      groups = Array.isArray(data.data) ? data.data : [];
+      renderGroups();
+    }
+
+    async function openGroup(groupId) {
+      const g = groups.find(x => String(x._id) === String(groupId));
+      if (!g) return;
+
+      active = g;
+      activeMembership = g.membership || null;
+
+      el.avatarLetter.textContent = (g.name || 'G').slice(0, 1).toUpperCase();
+      el.groupTitle.textContent = g.name || 'Group';
+
+      const badgeText = g.visibility === 'national' ? 'NATIONAL' : 'SCHOOL';
+      el.groupBadge.textContent = badgeText;
+      el.groupBadge.classList.remove('hidden');
+      el.groupMeta.textContent = `${g.joinPolicy} • ${g.description || ''}`.trim();
+
+      // Actions
+      const isMember = !!activeMembership && (activeMembership.status === 'active' || activeMembership.status === 'muted');
+      const pending = activeMembership && activeMembership.status === 'pending';
+      const canJoin = !isMember && !pending && (g.joinPolicy === 'open' || g.joinPolicy === 'request_to_join');
+
+      el.joinBtn.classList.toggle('hidden', !canJoin);
+      el.membersBtn.classList.toggle('hidden', !active);
+
+      if (pending) setStatus('Your join request is pending approval by admin/pastor.');
+      else if (!isMember && g.joinPolicy === 'invite_only') setStatus('Invite-only group. Ask your school admin or pastor to invite you.');
+      else setStatus('');
+
+      setComposerEnabled(isMember && !(activeMembership && activeMembership.status === 'muted'));
+
+      // Load messages
+      el.messages.innerHTML = `<div class="text-sm text-gray-400">Loading messages...</div>`;
+      try {
+        const data = await api(`/chat/groups/${g._id}/messages?limit=50`, { method: 'GET' });
+        el.messages.innerHTML = '';
+        const items = Array.isArray(data.data) ? data.data : [];
+        if (!items.length) {
+          el.messages.innerHTML = `<div class="text-sm text-gray-400">No messages yet. Start the conversation.</div>`;
+        } else {
+          for (const m of items) addBubble(m);
+        }
+      } catch (err) {
+        el.messages.innerHTML = `<div class="text-sm text-red-300">${escapeHtml(err.message || 'Failed to load messages')}</div>`;
+      }
+
+      if (socket) socket.emit('group:join', { groupId: g._id });
+      renderGroups();
+    }
+
+    async function joinActive() {
+      if (!active) return;
+      await api(`/chat/groups/${active._id}/join`, { method: 'POST' });
+      await loadGroups();
+      await openGroup(active._id);
+    }
+
+    async function sendMessage() {
+      const text = String(el.messageInput.value || '').trim();
+      if (!text || !active) return;
+      el.messageInput.value = '';
+
+      if (socket) {
+        socket.emit('group:message', { groupId: active._id, text });
+        return;
+      }
+
+      const data = await api(`/chat/groups/${active._id}/messages`, { method: 'POST', body: JSON.stringify({ text }) });
+      addBubble(data.data);
+    }
+
+    async function openMembers() {
+      if (!active) return;
+      el.membersDrawer.classList.remove('hidden');
+      el.membersSub.textContent = active.name || 'Group';
+      el.membersList.innerHTML = `<div class="text-sm text-gray-400">Loading members...</div>`;
+
+      try {
+        const data = await api(`/chat/groups/${active._id}/members`, { method: 'GET' });
+        const items = Array.isArray(data.data) ? data.data : [];
+        const canModerate = me && (me.role === 'school_admin' || me.role === 'pastor' || me.role === 'super_admin');
+        let requestsHtml = '';
+
+        if (canModerate && active.joinPolicy === 'request_to_join') {
+          try {
+            const reqData = await api(`/chat/groups/${active._id}/requests`, { method: 'GET' });
+            const reqs = Array.isArray(reqData.data) ? reqData.data : [];
+            if (reqs.length) {
+              requestsHtml = `
+                <div class="mb-4 p-3 rounded-2xl bg-ink/30 border border-line">
+                  <div class="text-[11px] font-black tracking-widest text-gold mb-2">JOIN REQUESTS</div>
+                  <div class="space-y-2">
+                    ${reqs.map((r) => {
+                      const u = r.user || {};
+                      const name = \`\${u.firstName || ''} \${u.lastName || ''}\`.trim() || u.email || 'User';
+                      return \`
+                        <div class="p-3 rounded-2xl bg-ink/40 border border-line flex items-center justify-between gap-3">
+                          <div class="min-w-0">
+                            <div class="font-bold truncate">\${escapeHtml(name)}</div>
+                            <div class="text-[11px] text-gray-400 truncate">\${escapeHtml(u.email || '')}</div>
+                          </div>
+                          <div class="flex items-center gap-2">
+                            <button data-approve-user="\${u._id}" class="px-3 py-2 rounded-xl bg-green text-black text-[10px] font-black tracking-widest hover:opacity-90 transition">APPROVE</button>
+                            <button data-reject-user="\${u._id}" class="px-3 py-2 rounded-xl border border-line bg-panel2 text-[10px] font-black tracking-widest text-red-300 hover:bg-panel transition">REJECT</button>
+                          </div>
+                        </div>
+                      \`;
+                    }).join('')}
+                  </div>
+                </div>
+              `;
+            } else {
+              requestsHtml = `
+                <div class="mb-4 p-3 rounded-2xl bg-ink/30 border border-line">
+                  <div class="text-[11px] font-black tracking-widest text-gold mb-1">JOIN REQUESTS</div>
+                  <div class="text-xs text-gray-400">No pending requests.</div>
+                </div>
+              `;
+            }
+          } catch {
+            // ignore requests section errors
+          }
+        }
+
+        const membersHtml = items.length ? items.map((m) => {
+          const u = m.user || {};
+          const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email || 'Member';
+          const meta = `${m.roleInGroup} • ${m.status}`;
+          const showRemove = canModerate && String(u._id) !== String(me._id);
+          return `
+            <div class="p-3 rounded-2xl bg-ink/40 border border-line flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <div class="font-bold truncate">${escapeHtml(name)}</div>
+                <div class="text-[11px] text-gray-400 truncate">${escapeHtml(u.email || '')} • ${escapeHtml(meta)}</div>
+              </div>
+              ${showRemove ? `<button data-remove-user="${u._id}" class="px-3 py-2 rounded-xl border border-line bg-panel2 text-xs font-bold tracking-widest text-red-300 hover:bg-panel transition">REMOVE</button>` : ''}
+            </div>
+          `;
+        }).join('') : `<div class="text-sm text-gray-400">No members.</div>`;
+
+        el.membersList.innerHTML = requestsHtml + membersHtml;
+      } catch (err) {
+        el.membersList.innerHTML = `<div class="text-sm text-red-300">${escapeHtml(err.message || 'Failed to load members')}</div>`;
+      }
+    }
+
+    async function removeMember(userId) {
+      if (!active) return;
+      await api(`/chat/groups/${active._id}/members/${userId}`, { method: 'DELETE' });
+      await openMembers();
+    }
+
+    function connectSocket() {
+      socket = io('http://localhost:5000', { auth: { token } });
+
+      socket.on('connect', () => {
+        el.connDot.classList.remove('bg-gray-600');
+        el.connDot.classList.add('bg-green');
+        if (active) socket.emit('group:join', { groupId: active._id });
+      });
+
+      socket.on('connect_error', () => {
+        el.connDot.classList.remove('bg-green');
+        el.connDot.classList.add('bg-gray-600');
+      });
+
+      socket.on('group:message', (msg) => {
+        if (!active) return;
+        if (String(msg.group) !== String(active._id)) return;
+        addBubble(msg);
+      });
+    }
+
+    // UI events
+    el.refreshBtn.addEventListener('click', async () => loadGroups());
+    el.search.addEventListener('input', renderGroups);
+    document.querySelectorAll('.tabBtn').forEach((b) => {
+      b.addEventListener('click', () => {
+        tab = b.dataset.tab;
+        document.querySelectorAll('.tabBtn').forEach((x) => {
+          const on = x.dataset.tab === tab;
+          x.className = on
+            ? 'tabBtn flex-1 px-3 py-2 rounded-xl text-xs font-black tracking-widest border border-line bg-panel text-white'
+            : 'tabBtn flex-1 px-3 py-2 rounded-xl text-xs font-black tracking-widest border border-line bg-ink/40 text-gray-300 hover:bg-panel transition';
+        });
+        renderGroups();
+      });
+    });
+
+    el.groupsList.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-group-id]');
+      if (!btn) return;
+      await openGroup(btn.dataset.groupId);
+    });
+
+    el.joinBtn.addEventListener('click', joinActive);
+    el.membersBtn.addEventListener('click', openMembers);
+
+    el.sendBtn.addEventListener('click', sendMessage);
+    el.messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // drawer / modal close
+    document.addEventListener('click', (e) => {
+      const close = e.target.getAttribute('data-close');
+      if (close === 'drawer') el.membersDrawer.classList.add('hidden');
+      if (close === 'modal') el.createModal.classList.add('hidden');
+    });
+
+    el.membersList.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-remove-user]');
+      if (btn) {
+        if (!confirm('Remove this member?')) return;
+        await removeMember(btn.getAttribute('data-remove-user'));
+        return;
+      }
+
+      const approve = e.target.closest('button[data-approve-user]');
+      if (approve) {
+        const userId = approve.getAttribute('data-approve-user');
+        await api(`/chat/groups/${active._id}/requests/${userId}/approve`, { method: 'POST' });
+        await loadGroups();
+        await openMembers();
+        return;
+      }
+
+      const reject = e.target.closest('button[data-reject-user]');
+      if (reject) {
+        const userId = reject.getAttribute('data-reject-user');
+        if (!confirm('Reject this request? (User will be banned from requesting again)')) return;
+        await api(`/chat/groups/${active._id}/requests/${userId}/reject`, { method: 'POST' });
+        await loadGroups();
+        await openMembers();
+      }
+    });
+
+    el.createBtn.addEventListener('click', () => {
+      el.createErr.classList.add('hidden');
+      el.createModal.classList.remove('hidden');
+      el.newName.value = '';
+      el.newDesc.value = '';
+      el.newJoinPolicy.value = 'invite_only';
+      el.newDiscoverable.checked = true;
+      el.newVisibility.value = 'school_only';
+    });
+
+    el.createForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        el.createErr.classList.add('hidden');
+        const payload = {
+          name: el.newName.value.trim(),
+          description: el.newDesc.value.trim(),
+          joinPolicy: el.newJoinPolicy.value,
+          isDiscoverable: el.newDiscoverable.checked,
+          visibility: el.newVisibility.value,
+        };
+        await api('/chat/groups', { method: 'POST', body: JSON.stringify(payload) });
+        el.createModal.classList.add('hidden');
+        await loadGroups();
+      } catch (err) {
+        el.createErr.textContent = err.message || 'Failed to create group';
+        el.createErr.classList.remove('hidden');
+      }
+    });
+
+    // Init
+    (async function init() {
+      await loadMe();
+      connectSocket();
+      await loadGroups();
+    })().catch((err) => {
+      console.error(err);
+      alert(err.message || 'Failed to load chat');
+    });
+  </script>
+</body>
+</html>

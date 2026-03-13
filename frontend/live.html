@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Worship | RYW</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxuryGold: '#D4AF37',
+            luxuryDark: '#050F0D',
+            accentGreen: '#0B1F1A'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+    h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+  </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+  <header class="sticky top-0 z-30 bg-luxuryDark/90 backdrop-blur border-b border-luxuryGold/10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="worship.html" class="w-10 h-10 rounded-xl border border-luxuryGold/15 bg-white/[0.03] flex items-center justify-center hover:border-luxuryGold transition">
+          <i class="ri-arrow-left-line text-luxuryGold text-xl"></i>
+        </a>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black">Live Worship</h1>
+          <p class="text-xs text-gray-500 tracking-widest uppercase">Presence together, in real time</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="px-4 py-2 rounded-xl bg-white/[0.03] border border-luxuryGold/15">
+          <div class="text-[10px] tracking-widest uppercase text-gray-500">Live Now</div>
+          <div class="text-xl font-black text-luxuryGold flex items-center gap-2">
+            <span id="liveCount">0</span>
+            <i class="ri-pulse-line"></i>
+          </div>
+        </div>
+        <a href="chat.html" class="px-4 py-3 rounded-xl bg-luxuryGold text-black text-xs font-black tracking-widest hover:bg-white transition">OPEN CHAT</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section class="lg:col-span-2 bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+        <h2 class="text-3xl md:text-5xl font-black mb-4">Session Starts Here</h2>
+        <p class="text-gray-400 mb-8">This page is connected to the backend via Socket.IO. It shows real live attendance. You can keep worshiping here while chatting in groups.</p>
+
+        <div class="rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-accentGreen/70 to-black p-10">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-black tracking-[0.35em] text-luxuryGold uppercase">Live</div>
+              <div class="text-2xl font-black mt-2">Praise and Intercession</div>
+              <div class="text-sm text-gray-300 mt-2">A safe room for worship. Keep your focus. Keep your heart open.</div>
+            </div>
+            <div class="w-16 h-16 rounded-2xl bg-luxuryGold/15 border border-luxuryGold/25 flex items-center justify-center">
+              <i class="ri-fire-fill text-3xl text-luxuryGold"></i>
+            </div>
+          </div>
+
+          <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-4 rounded-2xl bg-black/30 border border-white/10">
+              <div class="text-[10px] tracking-widest uppercase text-gray-500">Focus</div>
+              <div class="text-sm font-bold mt-1">Headphones recommended</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-black/30 border border-white/10">
+              <div class="text-[10px] tracking-widest uppercase text-gray-500">Safety</div>
+              <div class="text-sm font-bold mt-1">Pastors and admins moderate</div>
+            </div>
+            <div class="p-4 rounded-2xl bg-black/30 border border-white/10">
+              <div class="text-[10px] tracking-widest uppercase text-gray-500">Growth</div>
+              <div class="text-sm font-bold mt-1">Mark your session as completed</div>
+            </div>
+          </div>
+
+          <button id="markCompleted" class="mt-8 px-10 py-4 rounded-full bg-luxuryGold text-black font-black tracking-widest text-[11px] hover:bg-white transition">
+            MARK COMPLETED
+          </button>
+          <p id="markStatus" class="text-xs text-gray-400 mt-3"></p>
+        </div>
+      </section>
+
+      <aside class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+        <h3 class="text-xl font-black mb-2">Connection</h3>
+        <p class="text-gray-400 text-sm mb-6">You must be logged in to join this live room.</p>
+
+        <div class="space-y-3">
+          <div class="p-4 rounded-2xl bg-black/30 border border-white/10">
+            <div class="text-[10px] tracking-widest uppercase text-gray-500">Socket</div>
+            <div id="socketStatus" class="text-sm font-bold mt-1 text-gray-300">Connecting...</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-black/30 border border-white/10">
+            <div class="text-[10px] tracking-widest uppercase text-gray-500">Account</div>
+            <div id="meLine" class="text-sm font-bold mt-1 text-gray-300">Loading...</div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center gap-3">
+          <a href="login.html" class="px-5 py-3 rounded-xl border border-luxuryGold/25 text-luxuryGold text-xs font-black tracking-widest hover:bg-luxuryGold/10 transition">LOGIN</a>
+          <a href="register.html" class="px-5 py-3 rounded-xl bg-luxuryGold text-black text-xs font-black tracking-widest hover:bg-white transition">REGISTER</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    const el = {
+      liveCount: document.getElementById('liveCount'),
+      socketStatus: document.getElementById('socketStatus'),
+      meLine: document.getElementById('meLine'),
+      markCompleted: document.getElementById('markCompleted'),
+      markStatus: document.getElementById('markStatus'),
+    };
+
+    async function loadMe() {
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        const u = data.user || {};
+        el.meLine.textContent = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email || 'Logged in';
+      } catch {
+        el.meLine.textContent = 'Logged in';
+      }
+    }
+
+    function connectSocket() {
+      const socket = io('http://localhost:5000', { auth: { token } });
+
+      socket.on('connect', () => {
+        el.socketStatus.textContent = 'Connected';
+        socket.emit('live:join');
+      });
+
+      socket.on('connect_error', () => {
+        el.socketStatus.textContent = 'Connection failed';
+      });
+
+      socket.on('live:count', (msg) => {
+        el.liveCount.textContent = String(msg && msg.count !== undefined ? msg.count : 0);
+      });
+
+      return socket;
+    }
+
+    el.markCompleted.addEventListener('click', async () => {
+      try {
+        el.markCompleted.disabled = true;
+        el.markStatus.textContent = 'Recording...';
+        const res = await fetch(`${API_URL}/activity/devotion-done`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        el.markStatus.textContent = 'Completed. Keep shining for Imana.';
+      } catch (err) {
+        el.markStatus.textContent = err.message || 'Failed to record';
+      } finally {
+        el.markCompleted.disabled = false;
+      }
+    });
+
+    loadMe();
+    connectSocket();
+  </script>
+</body>
+</html>
+

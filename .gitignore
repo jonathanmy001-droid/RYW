@@ -1,0 +1,9 @@
+# Ignore backend dependencies
+/backend/node_modules/
+
+# Ignore backend package lock
+/backend/package-lock.json
+
+# Ignore environment variables
+/backend/.env
+/backend/.env.*

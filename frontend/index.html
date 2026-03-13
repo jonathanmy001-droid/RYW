@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Rwandan Youth Worship | Sacred Experience</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        luxuryGold: '#D4AF37',
+                        luxuryDark: '#050F0D',
+                        accentGreen: '#0B1F1A'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+        h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        
+        .glass-nav { background: rgba(5, 15, 13, 0.8); backdrop-filter: blur(20px); }
+        .hero-video-overlay { background: radial-gradient(circle, transparent 20%, #050F0D 100%); }
+        
+        /* Premium Image Hover Effect */
+        .img-reveal-container { position: relative; overflow: hidden; border-radius: 2rem; }
+        .img-reveal-container img { transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .img-reveal-container:hover img { transform: scale(1.1); }
+        
+        /* Floating Animation */
+        .floating { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050F0D; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; }
+    </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+<nav class="fixed top-0 left-0 w-full z-[100] transition-all duration-700 px-6 py-5 border-b border-luxuryGold/10" id="mainNav">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="font-cinzel text-2xl tracking-[0.2em] text-luxuryGold font-bold italic">RYW</span>
+        </div>
+        <ul class="hidden lg:flex items-center gap-10 text-[10px] font-bold uppercase tracking-[0.3em]">
+            <li><a href="index.html" class="text-luxuryGold">Home</a></li>
+            <li><a href="#worship" class="hover:text-luxuryGold transition">Experience</a></li>
+            <li><a href="#gallery" class="hover:text-luxuryGold transition">Gallery</a></li>
+            <li><a href="#vision" class="hover:text-luxuryGold transition">Vision</a></li>
+            <li><a href="#join" class="hover:text-luxuryGold transition">Join</a></li>
+        </ul>
+        <div class="flex items-center gap-6">
+            <div id="navAuth" class="flex items-center gap-6">
+                <a href="login.html" id="navLogin" class="hidden md:block text-[10px] font-bold tracking-widest hover:text-luxuryGold transition">LOGIN</a>
+                <a href="register.html" id="navRegister" class="px-8 py-3 bg-luxuryGold text-black rounded-full text-[10px] font-black tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all">JOIN US</a>
+            </div>
+            <div id="navAuthed" class="hidden items-center gap-4">
+                <a href="youth.html" id="navDashboard" class="px-7 py-3 border border-luxuryGold text-luxuryGold rounded-full text-[10px] font-black tracking-widest hover:bg-luxuryGold hover:text-black transition-all">DASHBOARD</a>
+                <button id="navLogout" class="text-[10px] font-black tracking-widest text-red-500/80 hover:text-red-400 transition uppercase">LOGOUT</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<header class="relative h-screen flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover opacity-40">
+            <source src="./images/Pinterest_2.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 hero-video-overlay"></div>
+    </div>
+
+    <div class="relative z-10 text-center px-6">
+        <div data-aos="fade-down" class="mb-8 font-cinzel text-luxuryGold tracking-[0.6em] text-xs">IMANA NI MWAMI WACU</div>
+        <h1 data-aos="zoom-out" data-aos-duration="2000" class="text-6xl md:text-9xl font-black mb-8 leading-none">
+            UNSPOKEN <br> <span class="text-luxuryGold italic">GLORY.</span>
+        </h1>
+        <p data-aos="fade-up" data-aos-delay="400" class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto font-light leading-relaxed mb-12 italic">
+            "For from Him and through Him and to Him are all things. To Him be the glory forever."
+        </p>
+        <div data-aos="fade-up" data-aos-delay="600" class="flex flex-col md:flex-row gap-6 justify-center">
+            <a href="#join" class="px-12 py-5 border border-luxuryGold text-luxuryGold font-bold tracking-widest hover:bg-luxuryGold hover:text-black transition-all">ENTER THE SANCTUARY</a>
+        </div>
+    </div>
+</header>
+
+<section class="relative z-30 -mt-12 max-w-6xl mx-auto px-6">
+    <div class="backdrop-blur-xl bg-white/[0.02] border border-luxuryGold/20 rounded-full px-12 py-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" 
+         data-aos="fade-up" 
+         data-aos-delay="400">
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 items-center divide-x divide-luxuryGold/20">
+            
+            <div class="text-center px-4 group">
+                <div class="text-4xl md:text-5xl font-light text-luxuryGold mb-1 transition-transform duration-500 group-hover:scale-110">
+                    10K<span class="text-sm ml-1 opacity-60 font-sans tracking-normal">+</span>
+                </div>
+                <div class="font-cinzel text-[9px] uppercase tracking-[0.4em] text-gray-400">Worshippers</div>
+            </div>
+
+            <div class="text-center px-4 group">
+                <div class="text-4xl md:text-5xl font-light text-luxuryGold mb-1 transition-transform duration-500 group-hover:scale-110">
+                    30<span class="text-sm ml-1 opacity-60 font-sans tracking-normal">+</span>
+                </div>
+                <div class="font-cinzel text-[9px] uppercase tracking-[0.4em] text-gray-400">Provinces</div>
+            </div>
+
+            <div class="text-center px-4 group border-t md:border-t-0 border-luxuryGold/10 pt-6 md:pt-0">
+                <div class="text-4xl md:text-5xl font-light text-luxuryGold mb-1 transition-transform duration-500 group-hover:scale-110">
+                    150<span class="text-sm ml-1 opacity-60 font-sans tracking-normal">+</span>
+                </div>
+                <div class="font-cinzel text-[9px] uppercase tracking-[0.4em] text-gray-400">Leaders</div>
+            </div>
+
+            <div class="text-center px-4 group border-t md:border-t-0 border-luxuryGold/10 pt-6 md:pt-0">
+                <div class="text-4xl md:text-5xl font-light text-luxuryGold mb-1 transition-transform duration-500 group-hover:scale-110 uppercase">
+                    24<span class="text-sm ml-1 opacity-60 font-sans tracking-normal">/</span>7
+                </div>
+                <div class="font-cinzel text-[9px] uppercase tracking-[0.4em] text-gray-400">Intercession</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section id="gallery" class="py-32 bg-luxuryDark">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-20">
+            <div data-aos="fade-right">
+                <h2 class="font-cinzel text-luxuryGold tracking-widest text-xs mb-4 uppercase">Sacred Moments</h2>
+                <h3 class="text-5xl font-bold">The Presence <br> in <span class="italic text-luxuryGold">Pictures.</span></h3>
+            </div>
+            <p class="text-gray-500 max-w-xs text-sm mt-6 md:mt-0 font-light">Witness the fire of Rwanda's next generation rising in worship across the hills.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[800px]">
+            <div class="md:col-span-7 img-reveal-container h-[400px] md:h-full" data-aos="zoom-in">
+                <img src="./images/pray1.jpg" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt="Worship">
+                <div class="absolute bottom-10 left-10"><span class="bg-luxuryGold text-black px-4 py-2 font-bold text-xs uppercase">Live Session</span></div>
+            </div>
+            <div class="md:col-span-5 grid grid-rows-2 gap-6 h-full">
+                <div class="img-reveal-container" data-aos="fade-left">
+                    <img src="./images/pray3.jpg" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt="Music">
+                </div>
+                <div class="img-reveal-container" data-aos="fade-left" data-aos-delay="200">
+                    <img src="./images/pray4.jpg" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000" alt="Community">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="worship" class="py-32 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-20 items-center">
+            <div class="relative" data-aos="fade-right">
+                <div class="absolute -inset-10 bg-luxuryGold/5 rounded-full blur-3xl floating"></div>
+                <div class="relative img-reveal-container shadow-2xl">
+                    <img src="./images/pray.jpg" alt="Experience" class="w-full h-[600px] object-cover rounded-[3rem]">
+                </div>
+                <div class="absolute -bottom-10 -right-10 w-48 h-48 border-4 border-luxuryDark rounded-3xl overflow-hidden shadow-2xl hidden md:block" data-aos="zoom-in" data-aos-delay="500">
+                    <img src="./images/pray2.jpg" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <div data-aos="fade-left">
+                <h3 class="text-5xl md:text-7xl font-bold mb-8 leading-none">Holy <br> <span class="italic text-luxuryGold underline decoration-1 underline-offset-8">Communion.</span></h3>
+                <p class="text-gray-400 text-lg leading-relaxed mb-12 font-light">
+                    Every gathering is a spiritual architecture. We build spaces where the youth can encounter the King without distractions. Technical excellence meets spiritual depth.
+                </p>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="border-l-2 border-luxuryGold pl-6">
+                        <h4 class="font-bold text-white mb-2">Sound</h4>
+                        <p class="text-xs text-gray-500 uppercase tracking-tighter leading-relaxed">Immersive 3D audio sessions for deep prayer.</p>
+                    </div>
+                    <div class="border-l-2 border-luxuryGold pl-6">
+                        <h4 class="font-bold text-white mb-2">Mentors</h4>
+                        <p class="text-xs text-gray-500 uppercase tracking-tighter leading-relaxed">Direct access to fathers and mothers of faith.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="vision" class="py-40 bg-white/5 border-y border-luxuryGold/10">
+    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
+        <div data-aos="fade-up" class="group text-center">
+            <div class="w-20 h-20 bg-luxuryGold/10 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-luxuryGold transition-all duration-500">
+                <i class="ri-fire-fill text-3xl text-luxuryGold group-hover:text-black"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Pure Revival</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">Igniting a fire in the hearts of teenagers and young adults that cannot be quenched by the world.</p>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="200" class="group text-center">
+            <div class="w-20 h-20 bg-luxuryGold/10 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-luxuryGold transition-all duration-500">
+                <i class="ri-earth-fill text-3xl text-luxuryGold group-hover:text-black"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Kigali & Beyond</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">From the capital to the most remote hills, we are one voice, one nation, one worship.</p>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="400" class="group text-center">
+            <div class="w-20 h-20 bg-luxuryGold/10 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:bg-luxuryGold transition-all duration-500">
+                <i class="ri-shield-user-fill text-3xl text-luxuryGold group-hover:text-black"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Spiritual Safety</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">A sanctuary built on biblical truth, protecting the hearts of the next generation.</p>
+        </div>
+    </div>
+</section>
+
+<section class="relative py-40 flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 grayscale opacity-30">
+        <img src="./images/pray1.jpg" class="w-full h-full object-cover">
+    </div>
+    <div class="relative z-10 text-center px-6" data-aos="zoom-in">
+        <h2 class="text-6xl md:text-8xl font-black mb-8 italic text-white leading-none">JOIN THE <br> <span class="text-luxuryGold">MOVEMENT.</span></h2>
+        <a href="register.html" class="inline-block px-16 py-6 bg-luxuryGold text-black font-black text-xl rounded-full hover:scale-110 transition shadow-2xl">CREATE ACCOUNT</a>
+    </div>
+</section>
+
+<!-- JOIN / CONTACT -->
+<section id="join" class="py-32 bg-white/[0.03] border-y border-luxuryGold/10">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row items-end justify-between gap-8 mb-14">
+            <div data-aos="fade-right">
+                <h2 class="font-cinzel text-luxuryGold tracking-widest text-xs mb-4 uppercase">Enter The Sanctuary</h2>
+                <h3 class="text-5xl md:text-6xl font-black leading-tight">Join. <span class="italic text-luxuryGold">Grow.</span> Lead.</h3>
+            </div>
+            <p data-aos="fade-left" class="text-gray-400 max-w-xl text-sm leading-relaxed font-light">
+                Create your account, connect with your school community, and receive school event notifications while still exploring national events.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-black/40 border border-luxuryGold/15 rounded-3xl p-8" data-aos="fade-up">
+                <h4 class="text-2xl font-bold mb-3">Create Your Account</h4>
+                <p class="text-gray-400 text-sm mb-8 leading-relaxed">Choose your school, get approved if you are a leader, and start growing in worship and discipleship.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="register.html" class="px-10 py-4 bg-luxuryGold text-black font-black rounded-full text-[11px] tracking-[0.25em] text-center hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all">REGISTER</a>
+                    <a href="login.html" class="px-10 py-4 border border-luxuryGold/40 text-luxuryGold font-black rounded-full text-[11px] tracking-[0.25em] text-center hover:bg-luxuryGold hover:text-black transition-all">LOGIN</a>
+                </div>
+                <div class="mt-8 text-xs text-gray-500">
+                    Already logged in? Use the <span class="text-luxuryGold font-bold">Dashboard</span> button in the top bar.
+                </div>
+            </div>
+
+            <div class="bg-black/40 border border-luxuryGold/15 rounded-3xl p-8" data-aos="fade-up" data-aos-delay="150">
+                <h4 class="text-2xl font-bold mb-3">Contact & Updates</h4>
+                <p class="text-gray-400 text-sm mb-6 leading-relaxed">Send a message to the RYW team or subscribe for platform updates.</p>
+
+                <form id="contactForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input id="contactName" class="px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold transition" placeholder="Your name" required />
+                        <input id="contactEmail" type="email" class="px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold transition" placeholder="Email" required />
+                    </div>
+                    <input id="contactSubject" class="px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold transition" placeholder="Subject (optional)" />
+                    <textarea id="contactMessage" rows="4" class="w-full px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold transition" placeholder="Write your message..." required></textarea>
+                    <button id="contactSubmit" type="submit" class="w-full px-6 py-4 bg-luxuryGold text-black font-black rounded-full text-[11px] tracking-[0.25em] hover:bg-white transition-all">SEND MESSAGE</button>
+                    <div id="contactStatus" class="text-xs text-gray-500"></div>
+                </form>
+
+                <div class="mt-8 pt-6 border-t border-white/10">
+                    <div class="text-xs font-black tracking-[0.25em] text-luxuryGold uppercase mb-3">Newsletter</div>
+                    <form id="subscribeForm" class="flex flex-col sm:flex-row gap-3">
+                        <input id="subscribeEmail" type="email" class="flex-1 px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold transition" placeholder="your@email.com" required />
+                        <button id="subscribeBtn" type="submit" class="px-8 py-3 rounded-xl border border-luxuryGold text-luxuryGold font-black text-[11px] tracking-[0.25em] hover:bg-luxuryGold hover:text-black transition-all">SUBSCRIBE</button>
+                    </form>
+                    <div id="subscribeStatus" class="text-xs text-gray-500 mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-20 bg-black border-t border-luxuryGold/10 text-center">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="font-cinzel text-luxuryGold text-3xl mb-8 tracking-[0.4em] italic font-bold">RYW</div>
+        <div class="flex justify-center gap-10 mb-12 text-gray-500">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="hover:text-luxuryGold transition uppercase text-[10px] tracking-widest font-bold font-sans">Instagram</a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="hover:text-luxuryGold transition uppercase text-[10px] tracking-widest font-bold font-sans">YouTube</a>
+            <a href="https://wa.me/?text=Muraho%20RYW%20team%20-%20I%20need%20help%20with%20the%20platform." target="_blank" rel="noopener noreferrer" class="hover:text-luxuryGold transition uppercase text-[10px] tracking-widest font-bold font-sans">WhatsApp</a>
+        </div>
+        <p class="text-gray-600 text-[10px] tracking-[0.6em] uppercase">(c) 2026 Rwandan Youth Worship | Kigali, Rwanda</p>
+    </div>
+</footer>
+
+<script>
+    AOS.init({ duration: 1200, once: true });
+
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('mainNav');
+        if (window.scrollY > 100) {
+            nav.classList.add('glass-nav', 'py-3');
+            nav.classList.remove('py-5');
+        } else {
+            nav.classList.remove('glass-nav', 'py-3');
+            nav.classList.add('py-5');
+        }
+    });
+
+    // Role-aware nav + real homepage forms
+    (function initHomepage() {
+        const API_URL = 'http://localhost:5000/api';
+        const token = localStorage.getItem('token');
+
+        const navAuth = document.getElementById('navAuth');
+        const navAuthed = document.getElementById('navAuthed');
+        const navDashboard = document.getElementById('navDashboard');
+        const navLogout = document.getElementById('navLogout');
+
+        function dashboardForRole(role) {
+            if (role === 'super_admin') return 'dashboard/super-admin.html';
+            if (role === 'school_admin') return 'dashboard/school-admin.html';
+            if (role === 'pastor') return 'dashboard/pastor.html';
+            return 'youth.html';
+        }
+
+        async function loadMe() {
+            if (!token) return null;
+            try {
+                const res = await fetch(`${API_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Failed');
+                if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+                return data.user || null;
+            } catch {
+                return null;
+            }
+        }
+
+        async function setupNav() {
+            if (!token) {
+                navAuth?.classList.remove('hidden');
+                navAuthed?.classList.add('hidden');
+                return;
+            }
+            const cached = localStorage.getItem('user');
+            const user = cached ? JSON.parse(cached) : await loadMe();
+            const role = user?.role || 'youth';
+
+            if (navDashboard) navDashboard.href = dashboardForRole(role);
+
+            navAuth?.classList.add('hidden');
+            navAuthed?.classList.remove('hidden');
+            navAuthed?.classList.add('flex');
+        }
+
+        navLogout?.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        // Contact form
+        const contactForm = document.getElementById('contactForm');
+        const contactStatus = document.getElementById('contactStatus');
+        contactForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('contactName')?.value?.trim();
+            const email = document.getElementById('contactEmail')?.value?.trim();
+            const subject = document.getElementById('contactSubject')?.value?.trim();
+            const message = document.getElementById('contactMessage')?.value?.trim();
+            const submit = document.getElementById('contactSubmit');
+
+            try {
+                if (contactStatus) contactStatus.textContent = 'Sending...';
+                if (submit) submit.disabled = true;
+
+                const res = await fetch(`${API_URL}/public/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, subject, message, source: 'index' })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || 'Failed to send');
+                if (contactStatus) contactStatus.textContent = data.message || 'Message received.';
+                contactForm.reset();
+            } catch (err) {
+                if (contactStatus) contactStatus.textContent = (err && err.message) ? err.message : 'Could not send message';
+            } finally {
+                if (submit) submit.disabled = false;
+            }
+        });
+
+        // Subscribe form
+        const subscribeForm = document.getElementById('subscribeForm');
+        const subscribeStatus = document.getElementById('subscribeStatus');
+        subscribeForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('subscribeEmail')?.value?.trim();
+            const btn = document.getElementById('subscribeBtn');
+            try {
+                if (subscribeStatus) subscribeStatus.textContent = 'Subscribing...';
+                if (btn) btn.disabled = true;
+
+                const res = await fetch(`${API_URL}/public/subscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, source: 'index' })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.message || 'Failed to subscribe');
+                if (subscribeStatus) subscribeStatus.textContent = data.message || 'Subscribed.';
+                subscribeForm.reset();
+            } catch (err) {
+                if (subscribeStatus) subscribeStatus.textContent = (err && err.message) ? err.message : 'Could not subscribe';
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        });
+
+        setupNav();
+    })();
+</script>
+
+</body>
+</html>

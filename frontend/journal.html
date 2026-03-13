@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reflection Journal | RYW</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { luxuryGold: '#D4AF37', luxuryDark: '#050F0D', accentGreen: '#0B1F1A' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+    h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050F0D; }
+    ::-webkit-scrollbar-thumb { background: #D4AF37; }
+  </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+  <header class="sticky top-0 z-30 bg-luxuryDark/90 backdrop-blur border-b border-luxuryGold/10">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="youth.html#hub" class="w-10 h-10 rounded-xl border border-luxuryGold/15 bg-white/[0.03] flex items-center justify-center hover:border-luxuryGold transition">
+          <i class="ri-arrow-left-line text-luxuryGold text-xl"></i>
+        </a>
+        <div>
+          <div class="text-[10px] tracking-widest uppercase text-gray-500">Reflection</div>
+          <h1 class="text-xl md:text-2xl font-black">Journal</h1>
+        </div>
+      </div>
+      <a href="dashboard/profile.html" class="px-4 py-3 rounded-xl border border-luxuryGold/20 text-luxuryGold text-xs font-black tracking-widest hover:bg-luxuryGold/10 transition">
+        PROFILE
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-10 space-y-8">
+    <section class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+      <div class="flex items-start justify-between gap-6">
+        <div class="min-w-0">
+          <div class="text-[10px] tracking-widest uppercase text-gray-500">Prompt</div>
+          <h2 id="promptTitle" class="text-2xl md:text-4xl font-black mt-2">Today</h2>
+          <div id="promptRef" class="text-xs font-black tracking-widest text-luxuryGold uppercase mt-3"></div>
+          <p id="promptText" class="text-gray-400 mt-4"></p>
+        </div>
+        <div class="w-16 h-16 rounded-2xl bg-luxuryGold/15 border border-luxuryGold/25 flex items-center justify-center shrink-0">
+          <i class="ri-quill-pen-line text-3xl text-luxuryGold"></i>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+      <form id="journalForm" class="space-y-5">
+        <div>
+          <label class="block text-xs font-black tracking-widest text-luxuryGold uppercase mb-2">Mood</label>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button type="button" data-mood="blessed" class="moodBtn px-4 py-3 rounded-2xl border border-luxuryGold/15 bg-black/30 text-xs font-black tracking-widest hover:bg-white/5">BLESSED</button>
+            <button type="button" data-mood="comfort" class="moodBtn px-4 py-3 rounded-2xl border border-luxuryGold/15 bg-black/30 text-xs font-black tracking-widest hover:bg-white/5">COMFORT</button>
+            <button type="button" data-mood="battle" class="moodBtn px-4 py-3 rounded-2xl border border-luxuryGold/15 bg-black/30 text-xs font-black tracking-widest hover:bg-white/5">BATTLE</button>
+            <button type="button" data-mood="neutral" class="moodBtn px-4 py-3 rounded-2xl border border-luxuryGold/15 bg-black/30 text-xs font-black tracking-widest hover:bg-white/5">NEUTRAL</button>
+          </div>
+          <p class="text-[11px] text-gray-500 mt-3">Your mood is private. It helps you reflect on growth over time.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-black tracking-widest text-luxuryGold uppercase mb-2">Your Reflection</label>
+          <textarea id="text" required rows="8" maxlength="5000"
+            class="w-full p-4 rounded-2xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold"
+            placeholder="Write what God is teaching you today..."></textarea>
+          <div class="mt-2 flex items-center justify-between text-[11px] text-gray-500">
+            <span id="saveStatus"></span>
+            <span><span id="count">0</span>/5000</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button id="saveBtn" type="submit" class="px-10 py-4 rounded-full bg-luxuryGold text-black font-black tracking-widest text-[11px] hover:bg-white transition">
+            SAVE REFLECTION
+          </button>
+          <a href="player.html?session=morning" class="px-10 py-4 rounded-full border border-luxuryGold/30 text-luxuryGold font-black tracking-widest text-[11px] hover:bg-luxuryGold hover:text-black transition text-center">
+            START WORSHIP
+          </a>
+        </div>
+      </form>
+    </section>
+
+    <section class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h3 class="text-xl font-black">Recent Reflections</h3>
+          <p class="text-sm text-gray-400">Only you can see your journal.</p>
+        </div>
+        <button id="refreshBtn" class="px-4 py-3 rounded-xl border border-luxuryGold/20 text-luxuryGold text-xs font-black tracking-widest hover:bg-luxuryGold/10 transition">REFRESH</button>
+      </div>
+      <div id="recent" class="mt-6 space-y-4">
+        <div class="text-gray-500 text-sm">Loading...</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const promptTitle = params.get('title') || 'Iri jambo ry\'uyu munsi';
+    const promptRef = params.get('ref') || '';
+    const promptText = params.get('text') || '"Kuko Imana ari yo itera gukunda no gukora ibyo yishimira..."';
+
+    document.getElementById('promptTitle').textContent = promptTitle;
+    document.getElementById('promptRef').textContent = promptRef;
+    document.getElementById('promptText').textContent = promptText;
+
+    let mood = (params.get('mood') || 'neutral').toLowerCase();
+    if (!['blessed','comfort','battle','neutral'].includes(mood)) mood = 'neutral';
+
+    function setMood(next) {
+      mood = next;
+      document.querySelectorAll('.moodBtn').forEach((b) => {
+        const active = b.getAttribute('data-mood') === mood;
+        b.classList.toggle('bg-luxuryGold', active);
+        b.classList.toggle('text-black', active);
+        b.classList.toggle('border-luxuryGold', active);
+      });
+    }
+
+    setMood(mood);
+    document.querySelectorAll('.moodBtn').forEach((b) => {
+      b.addEventListener('click', () => setMood(b.getAttribute('data-mood')));
+    });
+
+    const textEl = document.getElementById('text');
+    const countEl = document.getElementById('count');
+    textEl.addEventListener('input', () => { countEl.textContent = String(textEl.value.length); });
+    countEl.textContent = String(textEl.value.length);
+
+    async function loadRecent() {
+      const box = document.getElementById('recent');
+      try {
+        const res = await fetch(`${API_URL}/journal/mine?limit=10`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        const items = Array.isArray(data.data) ? data.data : [];
+        if (!items.length) {
+          box.innerHTML = '<div class="text-gray-500 text-sm">No reflections yet. Start with one today.</div>';
+          return;
+        }
+        box.innerHTML = items.map((x) => {
+          const when = x.createdAt ? new Date(x.createdAt).toLocaleString() : '';
+          const preview = String(x.text || '').slice(0, 200);
+          const moodLabel = String(x.mood || 'neutral').toUpperCase();
+          return `
+            <div class="p-5 rounded-2xl bg-black/30 border border-white/10">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-[10px] font-black tracking-widest text-luxuryGold uppercase">${escapeHtml(moodLabel)}</div>
+                <div class="text-[10px] text-gray-600">${escapeHtml(when)}</div>
+              </div>
+              <div class="mt-2 text-sm text-gray-300">${escapeHtml(preview)}${x.text && x.text.length > 200 ? '...' : ''}</div>
+              ${x.promptRef ? `<div class="mt-3 text-[10px] text-gray-500 font-black tracking-widest uppercase">${escapeHtml(x.promptRef)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        box.innerHTML = `<div class="text-red-400 text-sm">${escapeHtml(err.message || 'Failed')}</div>`;
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadRecent);
+
+    document.getElementById('journalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveBtn');
+      const status = document.getElementById('saveStatus');
+      status.textContent = '';
+      try {
+        saveBtn.disabled = true;
+        status.textContent = 'Saving...';
+        const res = await fetch(`${API_URL}/journal`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            promptTitle,
+            promptRef,
+            promptText,
+            mood,
+            text: textEl.value
+          })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || 'Failed to save');
+        status.textContent = 'Saved.';
+        textEl.value = '';
+        countEl.textContent = '0';
+        await loadRecent();
+      } catch (err) {
+        status.textContent = err.message || 'Save failed.';
+      } finally {
+        saveBtn.disabled = false;
+      }
+    });
+
+    loadRecent();
+  </script>
+</body>
+</html>
+

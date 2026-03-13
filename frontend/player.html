@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Worship Session | RYW</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxuryGold: '#D4AF37',
+            luxuryDark: '#050F0D',
+            accentGreen: '#0B1F1A'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+    h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+  </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+  <header class="sticky top-0 z-30 bg-luxuryDark/90 backdrop-blur border-b border-luxuryGold/10">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="worship.html" class="w-10 h-10 rounded-xl border border-luxuryGold/15 bg-white/[0.03] flex items-center justify-center hover:border-luxuryGold transition">
+          <i class="ri-arrow-left-line text-luxuryGold text-xl"></i>
+        </a>
+        <div>
+          <div class="text-[10px] tracking-widest uppercase text-gray-500">Worship Session</div>
+          <h1 id="title" class="text-xl md:text-2xl font-black">Loading...</h1>
+        </div>
+      </div>
+      <a href="chat.html" class="px-4 py-3 rounded-xl border border-luxuryGold/20 text-luxuryGold text-xs font-black tracking-widest hover:bg-luxuryGold/10 transition">
+        OPEN CHAT
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-10">
+    <section class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-8">
+      <div class="flex items-start justify-between gap-6">
+        <div class="min-w-0">
+          <h2 class="text-3xl md:text-5xl font-black mb-3" id="headline">Session</h2>
+          <p class="text-gray-400 mb-6" id="desc">Loading...</p>
+          <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+            <span class="px-3 py-1 rounded-full bg-black/30 border border-white/10" id="duration">-- min</span>
+            <span class="px-3 py-1 rounded-full bg-black/30 border border-white/10">Guided</span>
+            <span class="px-3 py-1 rounded-full bg-black/30 border border-white/10">Prayer</span>
+          </div>
+        </div>
+        <div class="w-16 h-16 rounded-2xl bg-luxuryGold/15 border border-luxuryGold/25 flex items-center justify-center shrink-0">
+          <i class="ri-play-circle-fill text-4xl text-luxuryGold"></i>
+        </div>
+      </div>
+
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-5 rounded-2xl bg-black/30 border border-white/10">
+          <div class="text-[10px] tracking-widest uppercase text-gray-500">Step 1</div>
+          <div class="text-sm font-bold mt-2">Silence (2 min)</div>
+          <div class="text-xs text-gray-400 mt-2">Breathe, focus, surrender.</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-black/30 border border-white/10">
+          <div class="text-[10px] tracking-widest uppercase text-gray-500">Step 2</div>
+          <div class="text-sm font-bold mt-2">Worship (main)</div>
+          <div class="text-xs text-gray-400 mt-2">Sing and meditate on scripture.</div>
+        </div>
+        <div class="p-5 rounded-2xl bg-black/30 border border-white/10">
+          <div class="text-[10px] tracking-widest uppercase text-gray-500">Step 3</div>
+          <div class="text-sm font-bold mt-2">Prayer (closing)</div>
+          <div class="text-xs text-gray-400 mt-2">Write one prayer and one action.</div>
+        </div>
+      </div>
+
+      <div class="mt-10 flex flex-col sm:flex-row gap-4">
+        <button id="startBtn" class="px-10 py-4 rounded-full bg-luxuryGold text-black font-black tracking-widest text-[11px] hover:bg-white transition">
+          START TIMER
+        </button>
+        <button id="completeBtn" class="px-10 py-4 rounded-full border border-luxuryGold/30 text-luxuryGold font-black tracking-widest text-[11px] hover:bg-luxuryGold hover:text-black transition">
+          MARK COMPLETED
+        </button>
+      </div>
+
+      <div class="mt-6 text-sm">
+        <div class="text-gray-400">Timer</div>
+        <div id="timer" class="text-3xl font-black text-white mt-1">00:00</div>
+        <div id="status" class="text-xs text-gray-500 mt-2"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+
+    const sessions = {
+      morning: { title: 'Morning Ingoma', minutes: 30, desc: 'Start your day in His presence with guided worship and prayer.' },
+      soaking: { title: 'Soaking & Intercession', minutes: 60, desc: 'Deep worship and intercession for your school and nation.' },
+      revival: { title: 'Revival Fire - Youth', minutes: 45, desc: 'Ignite your spirit and strengthen your faith journey.' },
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get('session') || 'morning';
+    const session = sessions[key] || sessions.morning;
+
+    document.getElementById('title').textContent = session.title;
+    document.getElementById('headline').textContent = session.title;
+    document.getElementById('desc').textContent = session.desc;
+    document.getElementById('duration').textContent = `${session.minutes} min`;
+
+    let running = false;
+    let startedAt = null;
+    let timerInt = null;
+
+    function fmt(ms) {
+      const s = Math.max(0, Math.floor(ms / 1000));
+      const mm = String(Math.floor(s / 60)).padStart(2, '0');
+      const ss = String(s % 60).padStart(2, '0');
+      return `${mm}:${ss}`;
+    }
+
+    function stopTimer() {
+      running = false;
+      if (timerInt) clearInterval(timerInt);
+      timerInt = null;
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      if (running) {
+        stopTimer();
+        document.getElementById('status').textContent = 'Paused.';
+        return;
+      }
+      running = true;
+      startedAt = Date.now();
+      document.getElementById('status').textContent = 'Running...';
+      timerInt = setInterval(() => {
+        document.getElementById('timer').textContent = fmt(Date.now() - startedAt);
+      }, 250);
+    });
+
+    document.getElementById('completeBtn').addEventListener('click', async () => {
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+      try {
+        document.getElementById('status').textContent = 'Recording completion...';
+        const res = await fetch(`${API_URL}/activity/devotion-done`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        document.getElementById('status').textContent = 'Completed. Your streak and stats are updated.';
+      } catch (err) {
+        document.getElementById('status').textContent = err.message || 'Failed to record completion.';
+      }
+    });
+  </script>
+</body>
+</html>
+

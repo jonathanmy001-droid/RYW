@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Center | RYW</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        luxuryGold: '#D4AF37',
+                        luxuryDark: '#050F0D',
+                        cardDark: '#0B1F1A',
+                        success: '#10B981',
+                        danger: '#EF4444'
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050F0D; color: #E5E7EB; }
+        .glass-panel { background: rgba(11, 31, 26, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(212, 175, 55, 0.15); }
+        .gold-glow { box-shadow: 0 0 15px rgba(212, 175, 55, 0.15); }
+        .sidebar-link { transition: all 0.3s ease; border-left: 3px solid transparent; }
+        .sidebar-link:hover, .sidebar-link.active { background: rgba(212, 175, 55, 0.1); border-left-color: #D4AF37; color: #D4AF37; }
+        
+        /* Loading Spinner */
+        .loader { border: 3px solid rgba(212,175,55,0.1); border-radius: 50%; border-top: 3px solid #D4AF37; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-black border-r border-luxuryGold/20 hidden md:flex flex-col z-20">
+        <div class="p-8 flex items-center gap-3">
+            <div class="w-8 h-8 bg-luxuryGold rounded-full flex items-center justify-center text-black font-bold font-cinzel">R</div>
+            <span class="font-cinzel text-xl text-luxuryGold tracking-widest font-bold">RYW ADMIN</span>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2 mt-4">
+            <a href="#" onclick="switchTab('overview')" id="nav-overview" class="sidebar-link active flex items-center gap-4 px-4 py-3 text-sm font-medium text-gray-400 rounded-r-lg">
+                <i class="ri-dashboard-line text-lg"></i> Overview
+            </a>
+            
+            <!-- School Admin Links -->
+            <div id="school-admin-links" class="hidden space-y-2">
+                <a href="#" onclick="switchTab('students')" id="nav-students" class="sidebar-link flex items-center gap-4 px-4 py-3 text-sm font-medium text-gray-400 rounded-r-lg">
+                    <i class="ri-user-heart-line text-lg"></i> My Flock (Students)
+                </a>
+                <a href="#" class="sidebar-link flex items-center gap-4 px-4 py-3 text-sm font-medium text-gray-400 rounded-r-lg">
+                    <i class="ri-group-line text-lg"></i> Prayer Groups
+                </a>
+            </div>
+
+            <!-- Super Admin Links -->
+            <div id="super-admin-links" class="hidden space-y-2">
+                <a href="#" onclick="switchTab('approvals')" id="nav-approvals" class="sidebar-link flex items-center gap-4 px-4 py-3 text-sm font-medium text-gray-400 rounded-r-lg">
+                    <i class="ri-shield-check-line text-lg"></i> Pending Approvals
+                    <span id="badge-count" class="hidden ml-auto bg-luxuryGold text-black text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </a>
+                <a href="#" onclick="switchTab('schools')" id="nav-schools" class="sidebar-link flex items-center gap-4 px-4 py-3 text-sm font-medium text-gray-400 rounded-r-lg">
+                    <i class="ri-building-2-line text-lg"></i> All Schools
+                </a>
+                <a href="#" onclick="switchTab('users')" id="nav-users" class="sidebar-link flex items-center gap-4 px-4 py-3 text-sm font-medium text-gray-400 rounded-r-lg">
+                    <i class="ri-team-line text-lg"></i> Users
+                </a>
+                <a href="#" onclick="switchTab('audit')" id="nav-audit" class="sidebar-link flex items-center gap-4 px-4 py-3 text-sm font-medium text-gray-400 rounded-r-lg">
+                    <i class="ri-file-list-3-line text-lg"></i> Audit Log
+                </a>
+            </div>
+        </nav>
+
+        <div class="p-4 border-t border-luxuryGold/10">
+            <button onclick="logout()" class="flex items-center gap-3 text-gray-500 hover:text-red-400 transition text-sm px-4">
+                <i class="ri-logout-box-line"></i> Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col relative overflow-y-auto">
+        <!-- Header -->
+        <header class="h-20 border-b border-luxuryGold/10 flex items-center justify-between px-8 bg-black/50 backdrop-blur-md sticky top-0 z-10">
+            <h2 id="page-title" class="text-2xl font-cinzel text-luxuryGold">Dashboard</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <div id="user-name" class="text-sm font-bold text-white">Loading...</div>
+                    <div id="user-role" class="text-xs text-luxuryGold uppercase tracking-wider">...</div>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-luxuryGold/20 border border-luxuryGold flex items-center justify-center text-luxuryGold">
+                    <i class="ri-user-fill"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="p-8 max-w-7xl mx-auto w-full">
+            
+            <!-- VIEW: OVERVIEW -->
+            <div id="view-overview" class="space-y-8 animate-fade-in">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl gold-glow relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-luxuryGold/10 text-9xl"><i class="ri-user-fill"></i></div>
+                        <div class="text-gray-400 text-xs uppercase tracking-widest mb-2">Total Souls</div>
+                        <div class="text-4xl font-bold text-white relative z-10" id="stat-users">--</div>
+                        <div class="text-xs text-success mt-2 flex items-center gap-1"><i class="ri-arrow-up-line"></i> Growing daily</div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl gold-glow relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-luxuryGold/10 text-9xl"><i class="ri-building-2-fill"></i></div>
+                        <div class="text-gray-400 text-xs uppercase tracking-widest mb-2">Active Schools</div>
+                        <div class="text-4xl font-bold text-luxuryGold relative z-10" id="stat-schools">--</div>
+                        <div class="text-xs text-gray-500 mt-2">Across Rwanda</div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl gold-glow relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-luxuryGold/10 text-9xl"><i class="ri-calendar-event-fill"></i></div>
+                        <div class="text-gray-400 text-xs uppercase tracking-widest mb-2">Worship Events</div>
+                        <div class="text-4xl font-bold text-white relative z-10" id="stat-events">--</div>
+                        <div class="text-xs text-gray-500 mt-2">Scheduled</div>
+                    </div>
+                </div>
+
+                <!-- Welcome Banner -->
+                <div class="glass-panel p-8 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-2">Welcome to the Sanctuary</h3>
+                        <p class="text-gray-400 text-sm max-w-xl">
+                            "Shepherd the flock of God that is among you, exercising oversight, not under compulsion, but willingly, as God would have you." — 1 Peter 5:2
+                        </p>
+                    </div>
+                    <i class="ri-fire-fill text-6xl text-luxuryGold/20"></i>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="text-luxuryGold font-cinzel mb-4">Kingdom Demographics</h4>
+                        <div class="h-64"><canvas id="roleChart"></canvas></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="text-luxuryGold font-cinzel mb-4">Growth Trajectory</h4>
+                        <div class="h-64 flex items-center justify-center text-gray-500 italic">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance (Super Admin only) -->
+                <div id="super-maintenance" class="hidden glass-panel p-6 rounded-2xl">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <h4 class="text-luxuryGold font-cinzel mb-1">Maintenance</h4>
+                            <p class="text-gray-400 text-sm">Backfill Chat Groups from existing Prayer Groups (one-time safe migration).</p>
+                        </div>
+                        <button id="runPrayerChatMigrationBtn" class="px-5 py-3 rounded-lg bg-luxuryGold text-black text-xs font-bold tracking-widest hover:bg-white transition">
+                            RUN MIGRATION
+                        </button>
+                    </div>
+                    <div id="migrationResult" class="mt-4 text-sm text-gray-300 hidden"></div>
+                </div>
+            </div>
+
+            <!-- VIEW: STUDENTS (School Admin) -->
+            <div id="view-students" class="hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl text-white">Students in your School</h3>
+                    <button class="bg-luxuryGold text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-white transition">
+                        <i class="ri-add-line mr-1"></i> Add Student
+                    </button>
+                </div>
+                <div class="glass-panel rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-gray-400">
+                        <thead class="bg-luxuryGold/10 text-luxuryGold uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Email</th>
+                                <th class="px-6 py-4">Devotion Streak</th>
+                                <th class="px-6 py-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body" class="divide-y divide-gray-800">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: APPROVALS (Super Admin) -->
+            <div id="view-approvals" class="hidden space-y-6">
+                <h3 class="text-xl text-white">Pending Leadership Approvals</h3>
+                <div class="glass-panel rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-gray-400">
+                        <thead class="bg-luxuryGold/10 text-luxuryGold uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Role Requested</th>
+                                <th class="px-6 py-4">School</th>
+                                <th class="px-6 py-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approvals-table-body" class="divide-y divide-gray-800">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                    <div id="no-approvals-msg" class="hidden p-8 text-center text-gray-500">
+                        No pending approvals found.
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-schools" class="hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl text-white">All Schools</h3>
+                    <button onclick="refreshSchools()" class="text-xs font-bold tracking-widest text-luxuryGold hover:underline">REFRESH</button>
+                </div>
+
+                <div class="glass-panel rounded-xl p-6">
+                    <h4 class="text-sm uppercase tracking-widest text-gray-400 mb-4">Create School</h4>
+                    <form id="createSchoolForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input id="schoolName" class="px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white" placeholder="School name" required />
+                        <input id="schoolProvince" class="px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white" placeholder="Province" required />
+                        <input id="schoolCode" class="px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white" placeholder="Code (optional)" />
+                        <div class="md:col-span-3 flex justify-end">
+                            <button type="submit" class="px-6 py-3 rounded-lg bg-luxuryGold text-black text-xs font-bold tracking-widest">CREATE</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="glass-panel rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-gray-300">
+                        <thead class="bg-luxuryGold/10 text-luxuryGold uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-4">School</th>
+                                <th class="px-6 py-4">Province</th>
+                                <th class="px-6 py-4">Leaders</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schools-table-body" class="divide-y divide-gray-800">
+                            <tr><td colspan="5" class="p-6 text-center text-gray-500">Open this tab to load schools...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-audit" class="hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl text-white">Audit Log</h3>
+                    <button onclick="fetchAudit()" class="text-xs font-bold tracking-widest text-luxuryGold hover:underline">REFRESH</button>
+                </div>
+
+                <div class="glass-panel rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-gray-400">
+                        <thead class="bg-luxuryGold/10 text-luxuryGold uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-4">When</th>
+                                <th class="px-6 py-4">Actor</th>
+                                <th class="px-6 py-4">Action</th>
+                                <th class="px-6 py-4">Target</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-table-body" class="divide-y divide-gray-800">
+                            <tr><td colspan="4" class="p-6 text-center text-gray-500">Open this tab to load audit logs...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="view-users" class="hidden space-y-6">
+                <div class="flex items-end justify-between gap-4 flex-wrap">
+                    <div>
+                        <h3 class="text-xl text-white">Users</h3>
+                        <p class="text-xs text-gray-500 mt-1">Search, approve, lock, change role, and assign schools.</p>
+                    </div>
+                    <button onclick="fetchUsers()" class="text-xs font-bold tracking-widest text-luxuryGold hover:underline">REFRESH</button>
+                </div>
+
+                <div class="glass-panel rounded-xl p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input id="usersQuery" class="px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white" placeholder="Search name/email/username" />
+                        <select id="usersRole" class="px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white">
+                            <option value="">All roles</option>
+                            <option value="youth">youth</option>
+                            <option value="school_admin">school_admin</option>
+                            <option value="pastor">pastor</option>
+                            <option value="super_admin">super_admin</option>
+                        </select>
+                        <select id="usersApproved" class="px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white">
+                            <option value="">All approvals</option>
+                            <option value="true">Approved</option>
+                            <option value="false">Not approved</option>
+                        </select>
+                        <select id="usersSchool" class="px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white">
+                            <option value="">All schools</option>
+                        </select>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button id="usersSearchBtn" class="px-6 py-3 rounded-lg bg-luxuryGold text-black text-xs font-bold tracking-widest">SEARCH</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-xl overflow-hidden">
+                    <table class="w-full text-left text-sm text-gray-300">
+                        <thead class="bg-luxuryGold/10 text-luxuryGold uppercase text-xs">
+                            <tr>
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Email</th>
+                                <th class="px-6 py-4">Role</th>
+                                <th class="px-6 py-4">School</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body" class="divide-y divide-gray-800">
+                            <tr><td colspan="6" class="p-6 text-center text-gray-500">Open this tab to load users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Assign Leaders Modal -->
+            <div id="assignModal" class="hidden fixed inset-0 z-50">
+                <div class="absolute inset-0 bg-black/70"></div>
+                <div class="relative max-w-2xl mx-auto mt-24 bg-[#0B1F1A] border border-luxuryGold/20 rounded-2xl p-6 shadow-2xl">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-white">Assign Leaders</h3>
+                            <p id="assignSchoolName" class="text-sm text-gray-400 mt-1">School</p>
+                        </div>
+                        <button onclick="closeAssignModal()" class="text-gray-400 hover:text-white text-xl">×</button>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">School Admin</label>
+                            <select id="assignAdminSelect" class="w-full px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white">
+                                <option value="">Loading...</option>
+                            </select>
+                            <p class="text-[11px] text-gray-500 mt-2">Only approved school admins from this school are listed.</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Pastor</label>
+                            <select id="assignPastorSelect" class="w-full px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white">
+                                <option value="">Loading...</option>
+                            </select>
+                            <p class="text-[11px] text-gray-500 mt-2">Only approved pastors from this school are listed.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-end gap-3">
+                        <button onclick="closeAssignModal()" class="px-5 py-3 rounded-lg border border-luxuryGold/20 text-gray-200 text-xs font-bold tracking-widest hover:bg-white/5">CANCEL</button>
+                        <button id="assignSaveBtn" onclick="saveLeaderAssignments()" class="px-5 py-3 rounded-lg bg-luxuryGold text-black text-xs font-bold tracking-widest hover:bg-white">SAVE</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit User Modal -->
+            <div id="userModal" class="hidden fixed inset-0 z-50">
+                <div class="absolute inset-0 bg-black/70"></div>
+                <div class="relative max-w-2xl mx-auto mt-20 bg-[#0B1F1A] border border-luxuryGold/20 rounded-2xl p-6 shadow-2xl">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-white">Edit User</h3>
+                            <p id="userModalTitle" class="text-sm text-gray-400 mt-1">Loading...</p>
+                        </div>
+                        <button onclick="closeUserModal()" class="text-gray-400 hover:text-white text-xl">×</button>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Role</label>
+                            <select id="editUserRole" class="w-full px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white">
+                                <option value="youth">youth</option>
+                                <option value="school_admin">school_admin</option>
+                                <option value="pastor">pastor</option>
+                                <option value="super_admin">super_admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">School</label>
+                            <select id="editUserSchool" class="w-full px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white">
+                                <option value="">Select school...</option>
+                            </select>
+                            <p class="text-[11px] text-gray-500 mt-2">Required for pastor/school_admin/youth.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input id="editUserApproved" type="checkbox" class="accent-luxuryGold h-4 w-4" />
+                            <label for="editUserApproved" class="text-sm text-gray-300">Approved</label>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <input id="editUserLocked" type="checkbox" class="accent-luxuryGold h-4 w-4" />
+                            <label for="editUserLocked" class="text-sm text-gray-300">Locked</label>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Lock Reason (optional)</label>
+                            <input id="editUserLockReason" class="w-full px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white" placeholder="Reason for locking" />
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Reset Password (optional)</label>
+                            <input id="editUserNewPassword" type="password" class="w-full px-4 py-3 rounded-lg bg-black/30 border border-luxuryGold/15 text-white" placeholder="New password (min 6 chars)" />
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-end gap-3">
+                        <button onclick="closeUserModal()" class="px-5 py-3 rounded-lg border border-luxuryGold/20 text-gray-200 text-xs font-bold tracking-widest hover:bg-white/5">CANCEL</button>
+                        <button id="userSaveBtn" onclick="saveUserEdits()" class="px-5 py-3 rounded-lg bg-luxuryGold text-black text-xs font-bold tracking-widest hover:bg-white">SAVE</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+        let currentUser = null;
+
+        // 1. Auth Check
+        if (!token || !userStr) {
+            window.location.href = '../login.html';
+        } else {
+            currentUser = JSON.parse(userStr);
+            initDashboard();
+        }
+
+        function initDashboard() {
+            // Set Header Info
+            document.getElementById('user-name').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+            document.getElementById('user-role').textContent = currentUser.role.replace('_', ' ');
+
+            // Show Menu based on Role
+            if (currentUser.role === 'school_admin') {
+                document.getElementById('school-admin-links').classList.remove('hidden');
+                loadSchoolStats();
+            } else if (currentUser.role === 'super_admin' || currentUser.role === 'pastor') {
+                document.getElementById('super-admin-links').classList.remove('hidden');
+                fetchSuperStats();
+                checkPendingCount();
+                loadSchoolsForSelects();
+            }
+
+            if (currentUser.role === 'super_admin') {
+                document.getElementById('super-maintenance')?.classList.remove('hidden');
+            }
+        }
+
+        // 2. Navigation Logic
+        function switchTab(tabName) {
+            // Hide all views
+            ['overview', 'students', 'approvals', 'schools', 'users', 'audit'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                const nav = document.getElementById(`nav-${v}`);
+                if(nav) nav.classList.remove('active', 'text-luxuryGold', 'bg-luxuryGold/10', 'border-l-luxuryGold');
+            });
+
+            // Show selected view
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            
+            // Highlight Nav
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if(activeNav) activeNav.classList.add('active');
+
+            // Load Data
+            if (tabName === 'students') fetchStudents();
+            if (tabName === 'approvals') fetchApprovals();
+            if (tabName === 'schools') refreshSchools();
+            if (tabName === 'users') fetchUsers();
+            if (tabName === 'audit') fetchAudit();
+        }
+
+        // 3. Data Fetching Functions
+
+        // --- School Admin Data ---
+        async function fetchStudents() {
+            const tbody = document.getElementById('students-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center"><div class="loader mx-auto"></div></td></tr>';
+
+            try {
+                const res = await fetch(`${API_URL}/school/students`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const students = await res.json();
+                
+                tbody.innerHTML = '';
+                students.forEach(s => {
+                    const activeBadge = s.isActive
+                      ? '<span class="bg-green-900 text-green-300 px-2 py-1 rounded text-xs">Active</span>'
+                      : '<span class="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs">Inactive</span>';
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="px-6 py-4 font-medium text-white">${s.firstName} ${s.lastName}</td>
+                            <td class="px-6 py-4">${s.email}</td>
+                            <td class="px-6 py-4"><span class="text-luxuryGold">🔥 ${s.devotionStreak || 0} days</span></td>
+                            <td class="px-6 py-4">${activeBadge}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-red-400">Failed to load students</td></tr>';
+            }
+        }
+
+        // --- Super Admin Data ---
+        async function fetchApprovals() {
+            const tbody = document.getElementById('approvals-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center"><div class="loader mx-auto"></div></td></tr>';
+
+            try {
+                const res = await fetch(`${API_URL}/auth/pending`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const users = await res.json();
+
+                tbody.innerHTML = '';
+                if (users.length === 0) {
+                    document.getElementById('no-approvals-msg').classList.remove('hidden');
+                    document.getElementById('approvals-table-body').classList.add('hidden');
+                } else {
+                    document.getElementById('no-approvals-msg').classList.add('hidden');
+                    document.getElementById('approvals-table-body').classList.remove('hidden');
+                    
+                    users.forEach(u => {
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-white/5 transition">
+                                <td class="px-6 py-4 font-medium text-white">${u.firstName} ${u.lastName}</td>
+                                <td class="px-6 py-4 uppercase text-xs tracking-wide text-luxuryGold">${u.role}</td>
+                                <td class="px-6 py-4">${u.school?.name || 'N/A'}</td>
+                                <td class="px-6 py-4">
+                                    <button onclick="approveUser('${u._id}')" class="bg-luxuryGold hover:bg-white text-black px-3 py-1 rounded text-xs font-bold transition">
+                                        APPROVE
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function approveUser(id) {
+            if(!confirm("Confirm approval for this leader?")) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/auth/approve/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if(res.ok) {
+                    alert("User Approved!");
+                    fetchApprovals(); // Refresh list
+                    checkPendingCount(); // Refresh badge
+                }
+            } catch (err) {
+                alert("Error approving user");
+            }
+        }
+
+        async function checkPendingCount() {
+            try {
+                const res = await fetch(`${API_URL}/auth/pending`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const users = await res.json();
+                const badge = document.getElementById('badge-count');
+                if (users.length > 0) {
+                    badge.textContent = users.length;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            } catch(e) {}
+        }
+
+        // --- Mock Stats for Demo ---
+        function loadSchoolStats() { /* Kept for legacy, but school admin has own file now */ }
+
+        async function fetchSuperStats() {
+            try {
+                const res = await fetch(`${API_URL}/auth/admin/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                // Update Cards
+                document.getElementById('stat-users').textContent = data.totalUsers;
+                document.getElementById('stat-schools').textContent = data.totalSchools;
+                document.getElementById('stat-events').textContent = data.totalEvents;
+
+                // Render Charts
+                renderCharts(data);
+            } catch (err) { console.error(err); }
+        }
+
+        function renderCharts(data) {
+            // Prepare Role Data
+            const roles = data.usersByRole.map(r => r._id.replace('_', ' ').toUpperCase());
+            const counts = data.usersByRole.map(r => r.count);
+
+            // Role Chart
+            new Chart(document.getElementById('roleChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: roles,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: ['#D4AF37', '#10B981', '#3B82F6', '#EF4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { legend: { labels: { color: '#9CA3AF' } } } }
+            });
+
+            // Mock Growth Chart (since we don't have historical data yet)
+            new Chart(document.getElementById('growthChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{ label: 'New Souls', data: [12, 19, 3, 5, 2, 3], borderColor: '#D4AF37', tension: 0.4 }]
+                },
+                options: { scales: { y: { grid: { color: '#333' } }, x: { grid: { display: false } } } }
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+        }
+
+        // --- Schools (Super Admin) ---
+        async function refreshSchools() {
+            const tbody = document.getElementById('schools-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center"><div class="loader mx-auto"></div></td></tr>';
+
+            try {
+                const res = await fetch(`${API_URL}/admin/schools`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                if (!res.ok || !result.success) throw new Error(result.message || 'Failed to load schools');
+
+                const schools = result.data || [];
+                if (schools.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-500">No schools found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                schools.forEach((s) => {
+                    const statusBadge = s.isActive
+                      ? '<span class="bg-green-900 text-green-300 px-2 py-1 rounded text-xs">Active</span>'
+                      : '<span class="bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs">Inactive</span>';
+
+                    const adminLabel = s.admin ? `${s.admin.firstName || ''} ${s.admin.lastName || ''}`.trim() : 'Unassigned';
+                    const pastorLabel = s.pastor ? `${s.pastor.firstName || ''} ${s.pastor.lastName || ''}`.trim() : 'Unassigned';
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition align-top">
+                            <td class="px-6 py-4 font-medium text-white">${s.name}</td>
+                            <td class="px-6 py-4 text-gray-400">${s.province}</td>
+                            <td class="px-6 py-4 text-gray-400">
+                                <div class="text-xs">Admin: <span class="text-white">${adminLabel}</span></div>
+                                <div class="text-xs mt-1">Pastor: <span class="text-white">${pastorLabel}</span></div>
+                            </td>
+                            <td class="px-6 py-4">${statusBadge}</td>
+                            <td class="px-6 py-4 space-y-2">
+                                <button onclick="toggleSchoolActive('${s._id}', ${!s.isActive})" class="w-full px-3 py-2 rounded bg-black/30 border border-luxuryGold/15 text-xs font-bold tracking-widest hover:bg-white/5">
+                                    ${s.isActive ? 'DEACTIVATE' : 'ACTIVATE'}
+                                </button>
+                                <button data-action="assign-school" data-school-id="${s._id}" class="w-full px-3 py-2 rounded bg-luxuryGold text-black text-xs font-bold tracking-widest hover:bg-white">
+                                    ASSIGN LEADERS
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-red-400">Failed to load schools</td></tr>';
+            }
+        }
+
+        async function toggleSchoolActive(schoolId, isActive) {
+            try {
+                const res = await fetch(`${API_URL}/admin/schools/${schoolId}/active`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ isActive })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Failed to update school');
+                refreshSchools();
+            } catch (err) {
+                alert(err.message || 'Error updating school');
+            }
+        }
+
+        // Delegate school actions (avoids inline JS string escaping issues)
+        document.getElementById('schools-table-body')?.addEventListener('click', (e) => {
+            const assignBtn = e.target.closest('button[data-action="assign-school"]');
+            if (!assignBtn) return;
+
+            const schoolId = assignBtn.getAttribute('data-school-id');
+            const row = assignBtn.closest('tr');
+            const schoolName = row?.querySelector('td')?.textContent?.trim() || 'School';
+            openAssignModal(schoolId, schoolName);
+        });
+
+        let assignTargetSchoolId = null;
+
+        function closeAssignModal() {
+            assignTargetSchoolId = null;
+            document.getElementById('assignModal').classList.add('hidden');
+        }
+
+        async function openAssignModal(schoolId, schoolName) {
+            assignTargetSchoolId = schoolId;
+            document.getElementById('assignSchoolName').textContent = schoolName;
+            document.getElementById('assignModal').classList.remove('hidden');
+
+            const adminSelect = document.getElementById('assignAdminSelect');
+            const pastorSelect = document.getElementById('assignPastorSelect');
+            adminSelect.innerHTML = '<option value="">Loading...</option>';
+            pastorSelect.innerHTML = '<option value="">Loading...</option>';
+
+            try {
+                const [adminsRes, pastorsRes] = await Promise.all([
+                    fetch(`${API_URL}/admin/users?role=school_admin&approved=true&schoolId=${encodeURIComponent(schoolId)}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch(`${API_URL}/admin/users?role=pastor&approved=true&schoolId=${encodeURIComponent(schoolId)}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                ]);
+
+                const admins = await adminsRes.json();
+                const pastors = await pastorsRes.json();
+                if (!adminsRes.ok) throw new Error(admins.message || 'Failed to load admins');
+                if (!pastorsRes.ok) throw new Error(pastors.message || 'Failed to load pastors');
+
+                const adminUsers = admins.data || [];
+                const pastorUsers = pastors.data || [];
+
+                adminSelect.innerHTML = '<option value="">Unassigned</option>' +
+                    adminUsers.map(u => `<option value="${u._id}">${u.firstName} ${u.lastName} (${u.email})</option>`).join('');
+                pastorSelect.innerHTML = '<option value="">Unassigned</option>' +
+                    pastorUsers.map(u => `<option value="${u._id}">${u.firstName} ${u.lastName} (${u.email})</option>`).join('');
+            } catch (err) {
+                console.error(err);
+                adminSelect.innerHTML = '<option value="">Failed to load</option>';
+                pastorSelect.innerHTML = '<option value="">Failed to load</option>';
+            }
+        }
+
+        async function saveLeaderAssignments() {
+            if (!assignTargetSchoolId) return;
+
+            const adminUserId = document.getElementById('assignAdminSelect').value || null;
+            const pastorUserId = document.getElementById('assignPastorSelect').value || null;
+
+            const btn = document.getElementById('assignSaveBtn');
+            btn.disabled = true;
+            const original = btn.textContent;
+            btn.textContent = 'SAVING...';
+
+            try {
+                const res = await fetch(`${API_URL}/admin/schools/${assignTargetSchoolId}/assign`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ adminUserId, pastorUserId })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Failed to assign leaders');
+                closeAssignModal();
+                refreshSchools();
+            } catch (err) {
+                alert(err.message || 'Error assigning leaders');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = original;
+            }
+        }
+
+        // Close modal if backdrop clicked
+        document.getElementById('assignModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'assignModal') closeAssignModal();
+        });
+
+        // --- Users (Super Admin) ---
+        let schoolsCache = [];
+        let schoolsLoaded = false;
+        let usersCache = new Map();
+        let currentEditUserId = null;
+
+        async function loadSchoolsForSelects() {
+            if (schoolsLoaded) return;
+            try {
+                const res = await fetch(`${API_URL}/admin/schools`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) throw new Error(data.message || 'Failed to load schools');
+
+                schoolsCache = data.data || [];
+                schoolsLoaded = true;
+
+                const filterSelect = document.getElementById('usersSchool');
+                const editSelect = document.getElementById('editUserSchool');
+
+                if (filterSelect) {
+                    filterSelect.innerHTML = '<option value=\"\">All schools</option>' +
+                        schoolsCache.map(s => `<option value=\"${s._id}\">${s.name}</option>`).join('');
+                }
+                if (editSelect) {
+                    editSelect.innerHTML = '<option value=\"\">Select school...</option>' +
+                        schoolsCache.map(s => `<option value=\"${s._id}\">${s.name} (${s.province})</option>`).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function closeUserModal() {
+            currentEditUserId = null;
+            document.getElementById('editUserNewPassword').value = '';
+            document.getElementById('userModal').classList.add('hidden');
+        }
+
+        function openUserModal(userId) {
+            const user = usersCache.get(userId);
+            if (!user) return;
+
+            currentEditUserId = userId;
+            document.getElementById('userModalTitle').textContent = `${user.firstName} ${user.lastName} (${user.email})`;
+            document.getElementById('editUserRole').value = user.role || 'youth';
+            document.getElementById('editUserApproved').checked = Boolean(user.isApproved);
+            document.getElementById('editUserLocked').checked = Boolean(user.isLocked);
+            document.getElementById('editUserLockReason').value = user.lockedReason || '';
+
+            // Role-based school requirement
+            const schoolSelect = document.getElementById('editUserSchool');
+            const role = document.getElementById('editUserRole').value;
+            if (role === 'super_admin') {
+                schoolSelect.value = '';
+                schoolSelect.disabled = true;
+            } else {
+                schoolSelect.disabled = false;
+                schoolSelect.value = user.school?._id || user.school || '';
+            }
+
+            document.getElementById('userModal').classList.remove('hidden');
+        }
+
+        async function saveUserEdits() {
+            if (!currentEditUserId) return;
+
+            const role = document.getElementById('editUserRole').value;
+            const schoolId = document.getElementById('editUserSchool').value || null;
+            const isApproved = document.getElementById('editUserApproved').checked;
+            const isLocked = document.getElementById('editUserLocked').checked;
+            const lockedReason = document.getElementById('editUserLockReason').value.trim();
+            const newPassword = document.getElementById('editUserNewPassword').value;
+
+            const btn = document.getElementById('userSaveBtn');
+            const original = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'SAVING...';
+
+            try {
+                const patchRes = await fetch(`${API_URL}/admin/users/${currentEditUserId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        role,
+                        schoolId: role === 'super_admin' ? null : schoolId,
+                        isApproved,
+                        isLocked,
+                        lockedReason
+                    })
+                });
+                const patchData = await patchRes.json();
+                if (!patchRes.ok) throw new Error(patchData.message || 'Failed to update user');
+
+                if (newPassword && newPassword.length >= 6) {
+                    const pwRes = await fetch(`${API_URL}/admin/users/${currentEditUserId}/reset-password`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ newPassword })
+                    });
+                    const pwData = await pwRes.json();
+                    if (!pwRes.ok) throw new Error(pwData.message || 'Failed to reset password');
+                }
+
+                closeUserModal();
+                fetchUsers();
+                checkPendingCount();
+            } catch (err) {
+                alert(err.message || 'Error saving user');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = original;
+            }
+        }
+
+        async function fetchUsers() {
+            await loadSchoolsForSelects();
+
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '<tr><td colspan=\"6\" class=\"p-6 text-center\"><div class=\"loader mx-auto\"></div></td></tr>';
+
+            const q = document.getElementById('usersQuery').value.trim();
+            const role = document.getElementById('usersRole').value;
+            const approved = document.getElementById('usersApproved').value;
+            const schoolId = document.getElementById('usersSchool').value;
+
+            const params = new URLSearchParams();
+            if (q) params.set('q', q);
+            if (role) params.set('role', role);
+            if (approved) params.set('approved', approved);
+            if (schoolId) params.set('schoolId', schoolId);
+
+            try {
+                const res = await fetch(`${API_URL}/admin/users?${params.toString()}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                if (!res.ok || !result.success) throw new Error(result.message || 'Failed to load users');
+
+                const users = result.data || [];
+                usersCache = new Map(users.map(u => [u._id, u]));
+
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan=\"6\" class=\"p-6 text-center text-gray-500\">No users found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                users.forEach((u) => {
+                    const schoolName = u.school?.name || '—';
+                    const status = [
+                        u.isApproved ? '<span class=\"bg-green-900 text-green-300 px-2 py-1 rounded text-xs\">Approved</span>' : '<span class=\"bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs\">Pending</span>',
+                        u.isLocked ? '<span class=\"bg-red-900 text-red-300 px-2 py-1 rounded text-xs ml-2\">Locked</span>' : ''
+                    ].join('');
+
+                    tbody.innerHTML += `
+                        <tr class=\"hover:bg-white/5 transition\">
+                            <td class=\"px-6 py-4 font-medium text-white\">${u.firstName} ${u.lastName}</td>
+                            <td class=\"px-6 py-4 text-gray-400\">${u.email}</td>
+                            <td class=\"px-6 py-4 text-luxuryGold text-xs uppercase tracking-widest\">${u.role}</td>
+                            <td class=\"px-6 py-4 text-gray-400\">${schoolName}</td>
+                            <td class=\"px-6 py-4\">${status}</td>
+                            <td class=\"px-6 py-4\">
+                                <button data-action=\"edit-user\" data-user-id=\"${u._id}\" class=\"px-3 py-2 rounded bg-black/30 border border-luxuryGold/15 text-xs font-bold tracking-widest hover:bg-white/5\">EDIT</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan=\"6\" class=\"p-6 text-center text-red-400\">Failed to load users</td></tr>';
+            }
+        }
+
+        document.getElementById('usersSearchBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            fetchUsers();
+        });
+
+        document.getElementById('users-table-body')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-action=\"edit-user\"]');
+            if (!btn) return;
+            openUserModal(btn.getAttribute('data-user-id'));
+        });
+
+        document.getElementById('editUserRole')?.addEventListener('change', (e) => {
+            const schoolSelect = document.getElementById('editUserSchool');
+            if (!schoolSelect) return;
+            if (e.target.value === 'super_admin') {
+                schoolSelect.value = '';
+                schoolSelect.disabled = true;
+            } else {
+                schoolSelect.disabled = false;
+            }
+        });
+
+        document.getElementById('userModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'userModal') closeUserModal();
+        });
+
+        async function fetchAudit() {
+            const tbody = document.getElementById('audit-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center"><div class="loader mx-auto"></div></td></tr>';
+
+            try {
+                const res = await fetch(`${API_URL}/admin/audit?limit=50`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                if (!res.ok || !result.success) throw new Error(result.message || 'Failed to load audit log');
+
+                const logs = result.data || [];
+                if (logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500">No audit events yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                logs.forEach((l) => {
+                    const when = new Date(l.createdAt).toLocaleString();
+                    const actor = l.actor ? `${l.actor.firstName || ''} ${l.actor.lastName || ''}`.trim() : 'Unknown';
+                    const target = `${l.targetType}${l.targetId ? `:${l.targetId}` : ''}`;
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-white/5 transition">
+                            <td class="px-6 py-4 text-gray-500 text-xs">${when}</td>
+                            <td class="px-6 py-4 text-white">${actor}</td>
+                            <td class="px-6 py-4 text-luxuryGold text-xs uppercase tracking-widest">${l.action}</td>
+                            <td class="px-6 py-4 text-gray-400 text-xs">${target}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-red-400">Failed to load audit log</td></tr>';
+            }
+        }
+
+        // --- Maintenance (Super Admin) ---
+        document.getElementById('runPrayerChatMigrationBtn')?.addEventListener('click', async () => {
+            if (!confirm('Run migration: create chat groups + memberships for all existing prayer groups?')) return;
+
+            const btn = document.getElementById('runPrayerChatMigrationBtn');
+            const out = document.getElementById('migrationResult');
+            if (!btn || !out) return;
+
+            const prev = btn.textContent;
+            btn.textContent = 'RUNNING...';
+            btn.disabled = true;
+            out.classList.add('hidden');
+            out.textContent = '';
+
+            try {
+                const res = await fetch(`${API_URL}/admin/migrations/prayer-chat`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Migration failed');
+
+                out.classList.remove('hidden');
+                out.textContent = `Done: totalPrayerGroups=${data.data.totalPrayerGroups}, linked=${data.data.linked}, createdChatGroups=${data.data.createdChatGroups}, skipped=${data.data.skipped}`;
+            } catch (err) {
+                out.classList.remove('hidden');
+                out.textContent = `Error: ${err.message || 'Migration failed'}`;
+            } finally {
+                btn.textContent = prev;
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('createSchoolForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('schoolName').value.trim();
+            const province = document.getElementById('schoolProvince').value.trim();
+            const code = document.getElementById('schoolCode').value.trim();
+
+            try {
+                const res = await fetch(`${API_URL}/admin/schools`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, province, code: code || undefined })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Failed to create school');
+                e.target.reset();
+                refreshSchools();
+            } catch (err) {
+                alert(err.message || 'Error creating school');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | Rwandan Youth Worship</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        luxuryGold: '#D4AF37',
+                        luxuryDark: '#050F0D',
+                        accentGreen: '#0B1F1A'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+        h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        
+        .glass-nav { background: rgba(5, 15, 13, 0.9); backdrop-filter: blur(20px); }
+        .sidebar-gradient { background: linear-gradient(to bottom, #050F0D, #0B1F1A); }
+        
+        /* Sidebar Tooltip */
+        .nav-link .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+            left: 100%;
+        }
+        .nav-link:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            left: 110%;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #050F0D; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; }
+        /* Responsive padding for content when sidebar is present */
+        @media (min-width: 1024px) {
+            .main-content { padding-left: 100px; }
+        }
+
+        /* Chat bubble enhancements */
+        .chat-bubble { max-width: 85%; }
+        .chat-bubble.sent { background: rgba(212,175,55,0.12); border: 1px solid rgba(212,175,55,0.3); }
+        .chat-bubble.received { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+
+        /* Progress bar */
+        .progress-bar { background: linear-gradient(to right, #D4AF37 0%, #D4AF37 var(--progress), #0B1F1A var(--progress)); }
+    </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+<aside class="fixed bottom-0 left-0 w-full h-20 lg:w-24 lg:h-screen sidebar-gradient border-t lg:border-t-0 lg:border-r border-luxuryGold/10 z-[110] flex lg:flex-col items-center justify-around lg:justify-start lg:pt-8 pb-2 lg:pb-8">
+    
+    <div class="hidden lg:flex items-center justify-center mb-12">
+        <span class="font-cinzel text-2xl text-luxuryGold font-bold italic">RYW</span>
+    </div>
+    <nav class="flex lg:flex-col gap-2 md:gap-8 items-center w-full justify-around lg:justify-center">
+        
+        <a href="#hub" class="nav-link relative group p-3 text-luxuryGold border-b-2 lg:border-b-0 lg:border-l-2 border-luxuryGold">
+            <i class="ri-home-7-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">DASHBOARD</span>
+        </a>
+        <a href="#worship" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-music-2-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">WORSHIP</span>
+        </a>
+        <a href="#prayer" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-fire-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">PRAYER</span>
+        </a>
+        <a href="#bible" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-book-open-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">STUDY</span>
+        </a>
+        <a href="#mentors" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-parent-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">MENTORS</span>
+        </a>
+        <a href="#chat" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-chat-3-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">CHAT</span>
+        </a>
+        <a href="#growth" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-plant-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">GROWTH</span>
+        </a>
+        <a href="#resources" class="nav-link relative group p-3 text-gray-500 hover:text-luxuryGold transition-all">
+            <i class="ri-archive-line text-2xl"></i>
+            <span class="tooltip absolute hidden lg:block bg-luxuryGold text-black text-[10px] font-bold px-3 py-1 rounded ml-4 tracking-widest">RESOURCES</span>
+        </a>
+    </nav>
+    <div class="hidden lg:flex flex-col mt-auto gap-6 items-center">
+        <button id="settingsBtn" class="text-gray-500 hover:text-luxuryGold transition-all"><i class="ri-settings-4-line text-2xl"></i></button>
+        <button id="profileBtn" class="w-12 h-12 rounded-full border-2 border-luxuryGold/20 overflow-hidden hover:border-luxuryGold transition-all">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80" alt="Profile" class="w-full h-full object-cover">
+        </button>
+    </div>
+</aside>
+
+<main class="main-content min-h-screen">
+    
+    <header class="fixed top-0 right-0 left-0 lg:left-24 h-20 glass-nav border-b border-luxuryGold/10 z-[100] px-6 md:px-12 flex items-center justify-between">
+        <div class="flex flex-col">
+            <h2 class="text-xs font-bold text-luxuryGold tracking-[0.3em] font-cinzel">FEBRUARY 12, 2026</h2>
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Kigali, Rwanda</p>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="relative">
+                <button id="notifBtn" class="relative text-gray-400 hover:text-luxuryGold transition">
+                    <i class="ri-notification-3-line text-xl"></i>
+                    <span id="notifCount" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-[10px] font-black text-black rounded-full flex items-center justify-center border-2 border-luxuryDark"></span>
+                </button>
+
+                <div id="notifMenu" class="hidden absolute right-0 mt-3 w-80 md:w-96 bg-luxuryDark border border-luxuryGold/20 rounded-2xl shadow-2xl overflow-hidden z-[120]">
+                    <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                        <div class="text-xs font-black tracking-widest text-luxuryGold uppercase">Notifications</div>
+                        <button id="notifMarkAll" class="text-[10px] font-black tracking-widest text-gray-400 hover:text-luxuryGold uppercase">Mark all read</button>
+                    </div>
+                    <div id="notifList" class="max-h-96 overflow-y-auto">
+                        <div class="p-4 text-sm text-gray-500">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            <button id="searchBtn" class="text-gray-400 hover:text-luxuryGold transition"><i class="ri-search-2-line text-xl"></i></button>
+            <div class="h-8 w-[1px] bg-white/10 mx-2"></div>
+            <button id="logoutBtn" class="text-xs font-bold tracking-widest text-red-500/70 hover:text-red-500 uppercase flex items-center gap-2">
+                <span class="hidden md:block">Logout</span>
+                <i class="ri-logout-circle-r-line text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="pt-28 pb-32 lg:pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+        
+        <section class="mb-12" data-aos="fade-up">
+            <h1 class="text-4xl md:text-6xl font-black mb-4">Muraho, <span class="text-luxuryGold italic">Worshipper!</span></h1>
+            <p class="text-gray-400 font-light italic text-lg">"Imana ni yo mbaraga zacu." — Welcome to your sacred space for spiritual growth and divine connection.</p>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div class="md:col-span-2 bg-white/[0.03] border border-luxuryGold/10 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden" data-aos="fade-right">
+                <div class="absolute top-0 right-0 p-8 opacity-10">
+                    <i class="ri-book-3-line text-9xl text-white"></i>
+                </div>
+                <h3 class="font-cinzel text-luxuryGold tracking-widest text-xs mb-6 uppercase">Iri jambo ry'uyu munsi</h3>
+                <h4 class="text-2xl md:text-4xl font-bold mb-8 leading-tight italic">
+                    "Kuko Imana ari yo itera gukunda no gukora ibyo yishimira..."
+                </h4>
+                <p class="text-gray-500 font-bold mb-8 tracking-[0.2em]">ABAFILIPI 2:13</p>
+                <div class="flex gap-4">
+                    <button id="reflectBtn" class="px-8 py-3 bg-luxuryGold text-black text-[10px] font-black rounded-full tracking-widest">REFLECT</button>
+                    <button id="langBtn" class="px-8 py-3 border border-white/10 text-white text-[10px] font-black rounded-full tracking-widest hover:border-luxuryGold transition">KINYARWANDA</button>
+                </div>
+            </div>
+
+            <div class="bg-luxuryGold rounded-[2.5rem] p-10 flex flex-col justify-between text-black shadow-[0_20px_40px_rgba(212,175,55,0.2)]" data-aos="fade-left">
+                <div>
+                    <h3 class="font-black text-2xl leading-none mb-4 uppercase">How is your <br> soul today?</h3>
+                    <p class="text-sm font-medium opacity-70">Select your spiritual focus for this session.</p>
+                </div>
+                <div class="space-y-3">
+                    <button id="moodBlessedBtn" class="w-full py-4 bg-black/10 border border-black/20 rounded-2xl flex items-center justify-between px-6 hover:bg-black hover:text-luxuryGold transition-all font-bold text-xs tracking-widest">
+                        FEELING BLESSED <i class="ri-sun-line text-lg"></i>
+                    </button>
+                    <button id="moodComfortBtn" class="w-full py-4 bg-black/10 border border-black/20 rounded-2xl flex items-center justify-between px-6 hover:bg-black hover:text-luxuryGold transition-all font-bold text-xs tracking-widest">
+                        SEEKING COMFORT <i class="ri-windy-line text-lg"></i>
+                    </button>
+                    <button id="moodBattleBtn" class="w-full py-4 bg-black/10 border border-black/20 rounded-2xl flex items-center justify-between px-6 hover:bg-black hover:text-luxuryGold transition-all font-bold text-xs tracking-widest">
+                        READY TO BATTLE <i class="ri-sword-line text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Spiritual Growth Tracker Section -->
+        <section id="growth" class="mt-24" data-aos="fade-up">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold uppercase">Spiritual <span class="text-luxuryGold italic">Growth Tracker</span></h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">From zero to hero in faith — track your journey with Imana</p>
+                </div>
+                <button id="growthDetailsBtn" class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1">VIEW DETAILS</button>
+            </div>
+
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-[2.5rem] p-6 md:p-10 space-y-8">
+                <!-- Progress Bar -->
+                <div>
+                    <p class="text-sm font-bold mb-2">Faith Journey: <span id="user-name-display" class="text-luxuryGold">Worshipper</span></p>
+                    <div id="faith-progress-bar" class="h-3 rounded-full bg-accentGreen progress-bar" style="--progress: 0%;"></div>
+                    <div class="flex justify-between text-xs mt-2">
+                        <span>Beginner (0%)</span>
+                        <span id="faith-progress-label" class="text-luxuryGold">Warrior (0%)</span>
+                        <span>Hero (100%)</span>
+                    </div>
+                    <p class="text-gray-400 text-xs italic mt-4">Complete daily devotions, prayers, and mentorship sessions to advance.</p>
+                </div>
+
+                <!-- Milestones -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="p-4 bg-luxuryDark rounded-xl border border-luxuryGold/20">
+                        <i class="ri-book-mark-line text-3xl text-luxuryGold mb-3"></i>
+                        <h4 class="text-lg font-bold">Daily Devotion Streak</h4>
+                        <p id="stat-devotion-streak" class="text-2xl text-luxuryGold">0 days</p>
+                        <p class="text-xs text-gray-500">Keep going — Imana rewards consistency!</p>
+                    </div>
+                    <div class="p-4 bg-luxuryDark rounded-xl border border-luxuryGold/20">
+                        <i class="ri-pray-line text-3xl text-luxuryGold mb-3"></i>
+                        <h4 class="text-lg font-bold">Prayers Answered</h4>
+                        <p id="stat-prayers-answered" class="text-2xl text-luxuryGold">0</p>
+                        <p class="text-xs text-gray-500">Share your testimonies to inspire others.</p>
+                    </div>
+                    <div class="p-4 bg-luxuryDark rounded-xl border border-luxuryGold/20">
+                        <i class="ri-group-line text-3xl text-luxuryGold mb-3"></i>
+                        <h4 class="text-lg font-bold">Mentorship Sessions</h4>
+                        <p id="stat-mentorship-sessions" class="text-2xl text-luxuryGold">0</p>
+                        <p class="text-xs text-gray-500">Connect with elders for deeper guidance.</p>
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="text-center">
+                    <button id="unlockNextBtn" class="px-12 py-4 bg-luxuryGold text-black font-black rounded-full text-sm tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all">Unlock Next Level</button>
+                    <p class="text-gray-500 text-xs mt-4 italic">Start a new Bible plan today to grow stronger in the Mwami.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Upcoming Events Section -->
+        <section id="worship" class="mt-24" data-aos="fade-up">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold uppercase">Upcoming <span class="text-luxuryGold italic">Worship Events</span></h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">Join us in praise — find a session near you or online</p>
+                </div>
+                <a href="worship.html" class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1">VIEW ALL</a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="events-grid">
+                <!-- Loading placeholder -->
+                <div class="col-span-full text-center p-10 text-gray-500">Loading upcoming events...</div>
+            </div>
+        </section>
+
+        <div class="mt-20">
+            <div class="flex justify-between items-end mb-10" data-aos="fade-up">
+                <div>
+                    <h2 class="text-3xl font-bold uppercase">Community <span class="text-luxuryGold italic">Fire</span></h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">Latest testimonies from the provinces</p>
+                </div>
+                <button class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1">VIEW ALL</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="group bg-white/[0.02] border border-white/5 p-6 rounded-3xl hover:border-luxuryGold/30 transition-all" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-12 h-12 rounded-full overflow-hidden mb-4 border border-luxuryGold/20">
+                        <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-xs text-gray-400 italic mb-4">"Found such peace in the 3AM prayer room today. God is moving in Butare!"</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold text-luxuryGold tracking-widest">ANGELIQUE M.</span>
+                        <button class="text-gray-600 group-hover:text-red-500 transition-colors"><i class="ri-heart-fill"></i></button>
+                    </div>
+                </div>
+                <div class="group bg-white/[0.02] border border-white/5 p-6 rounded-3xl hover:border-luxuryGold/30 transition-all" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-12 h-12 rounded-full overflow-hidden mb-4 border border-luxuryGold/20">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-xs text-gray-400 italic mb-4">"From doubting to devoted — RYW changed my life!"</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold text-luxuryGold tracking-widest">JEAN P.</span>
+                        <button class="text-gray-600 group-hover:text-red-500 transition-colors"><i class="ri-heart-fill"></i></button>
+                    </div>
+                </div>
+                <!-- Add 2 more similar cards for polish -->
+            </div>
+        </div>
+
+        <!-- New Beginner to Hero Resources Section -->
+        <section id="resources" class="mt-24" data-aos="fade-up">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold uppercase">From Zero to <span class="text-luxuryGold italic">Hero Resources</span></h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">Guided paths for spiritual beginners to advanced warriors</p>
+                </div>
+                <button class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1">EXPLORE MORE</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="p-6 bg-white/[0.02] border border-luxuryGold/10 rounded-3xl hover:border-luxuryGold transition-all">
+                    <i class="ri-book-2-line text-4xl text-luxuryGold mb-4"></i>
+                    <h4 class="text-xl font-bold mb-2">Beginner Bible Plan</h4>
+                    <p class="text-xs text-gray-400 mb-4">30-day intro to God's Word — start with Genesis.</p>
+                    <button class="text-luxuryGold text-xs font-bold tracking-widest">Start Now →</button>
+                </div>
+                <div class="p-6 bg-white/[0.02] border border-luxuryGold/10 rounded-3xl hover:border-luxuryGold transition-all">
+                    <i class="ri-music-line text-4xl text-luxuryGold mb-4"></i>
+                    <h4 class="text-xl font-bold mb-2">Worship Starter Playlist</h4>
+                    <p class="text-xs text-gray-400 mb-4">Simple songs to enter His presence daily.</p>
+                    <button class="text-luxuryGold text-xs font-bold tracking-widest">Play →</button>
+                </div>
+                <div class="p-6 bg-white/[0.02] border border-luxuryGold/10 rounded-3xl hover:border-luxuryGold transition-all">
+                    <i class="ri-pray-line text-4xl text-luxuryGold mb-4"></i>
+                    <h4 class="text-xl font-bold mb-2">Prayer Basics Guide</h4>
+                    <p class="text-xs text-gray-400 mb-4">Learn how to pray effectively from scratch.</p>
+                    <button class="text-luxuryGold text-xs font-bold tracking-widest">Learn →</button>
+                </div>
+                <div class="p-6 bg-white/[0.02] border border-luxuryGold/10 rounded-3xl hover:border-luxuryGold transition-all">
+                    <i class="ri-star-line text-4xl text-luxuryGold mb-4"></i>
+                    <h4 class="text-xl font-bold mb-2">Advanced Discipleship</h4>
+                    <p class="text-xs text-gray-400 mb-4">Deep dives into leadership and evangelism.</p>
+                    <button class="text-luxuryGold text-xs font-bold tracking-widest">Advance →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fellowship Chat Section -->
+        <section id="chat" class="mt-24" data-aos="fade-up">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold uppercase">Fellowship <span class="text-luxuryGold italic">Chat</span></h2>
+                    <p class="text-gray-500 text-xs tracking-widest uppercase mt-2">Share your heart — someone is praying for you right now</p>
+                </div>
+                <button class="text-luxuryGold font-bold text-xs tracking-widest border-b border-luxuryGold pb-1">REFRESH</button>
+            </div>
+
+            <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-[2.5rem] p-6 md:p-10 max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-luxuryGold scrollbar-track-luxuryDark space-y-6">
+                
+                <!-- Sample heart-touching chat messages -->
+                <div class="flex flex-col items-start">
+                    <div class="chat-bubble received p-4 rounded-2xl rounded-tl-none">
+                        <p class="text-sm leading-relaxed">Muraho abavandimwe... uyu munsi numva ntewe n'umubabaro mu mutima. Nshaka amahoro. Mwansengera?</p>
+                    </div>
+                    <span class="text-[10px] text-gray-600 mt-1">Anonymous • 12 min ago</span>
+                    <div class="flex gap-4 mt-2">
+                        <button class="text-gray-400 hover:text-luxuryGold text-sm"><i class="ri-heart-line"></i> 18</button>
+                        <button class="text-gray-400 hover:text-luxuryGold text-sm"><i class="ri-pray-line"></i> Pray</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-end">
+                    <div class="chat-bubble sent p-4 rounded-2xl rounded-tr-none">
+                        <p class="text-sm leading-relaxed">Imana irakunda cyane! Ndashimira Imana ku bw'amahoro yampaye uyu munsi mu gitambo. Humura mwana w'Imana — turi kumwe mu Mwami.</p>
+                    </div>
+                    <span class="text-[10px] text-luxuryGold/70 mt-1">Jean P. • 8 min ago</span>
+                    <div class="flex gap-4 mt-2">
+                        <button class="text-gray-400 hover:text-luxuryGold text-sm"><i class="ri-heart-fill text-red-400"></i> 42</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-start">
+                    <div class="chat-bubble received p-4 rounded-2xl rounded-tl-none bg-gradient-to-r from-luxuryGold/5 to-transparent">
+                        <p class="text-sm leading-relaxed italic">Nshaka gushimira Imana — umwana wanjye yagarutse mu rugo nyuma y'igihe kirekire. Ibyiringiro byabaye ukuri! 🙏🔥</p>
+                    </div>
+                    <span class="text-[10px] text-gray-600 mt-1">Uwase • 25 min ago</span>
+                    <div class="flex gap-4 mt-2">
+                        <button class="text-gray-400 hover:text-luxuryGold text-sm"><i class="ri-heart-line"></i> 67</button>
+                        <button class="text-gray-400 hover:text-luxuryGold text-sm"><i class="ri-pray-line"></i> 31</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center py-8 opacity-70">
+                    <i class="ri-fire-fill text-4xl text-luxuryGold mb-3 animate-pulse"></i>
+                    <p class="text-sm italic">More hearts connecting... Imana iri hano muri twe</p>
+                </div>
+
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="chat.html" class="inline-flex px-12 py-5 bg-luxuryGold text-black font-black rounded-full text-sm tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transition-all items-center gap-3 mx-auto">
+                    <i class="ri-chat-3-fill text-xl"></i> JOIN THE CONVERSATION
+                </a>
+                <p class="text-gray-500 text-xs mt-4 italic">Your words can be someone's answered prayer today.</p>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+
+    // Basic auth guard for dashboards
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    function clamp(n, min, max) {
+      return Math.min(max, Math.max(min, n));
+    }
+
+    function computeFaithProgress({ devotionStreak = 0, prayersAnswered = 0, mentorshipSessions = 0 } = {}) {
+      // Simple DB-backed heuristic. Adjust as your platform adds real tracking events.
+      const score = (devotionStreak * 3) + (prayersAnswered * 4) + (mentorshipSessions * 8);
+      return clamp(Math.round(score), 0, 100);
+    }
+
+    async function loadMe() {
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to load profile');
+
+        const user = data.user || {};
+        localStorage.setItem('user', JSON.stringify(user));
+
+        if (user.firstName) {
+          document.getElementById('user-name-display').textContent = user.firstName;
+        }
+
+        const devotionStreak = Number(user.devotionStreak || 0);
+        const prayersAnswered = Number(user.prayersAnswered || 0);
+        const mentorshipSessions = Number(user.mentorshipSessions || 0);
+
+        const streakEl = document.getElementById('stat-devotion-streak');
+        const prayersEl = document.getElementById('stat-prayers-answered');
+        const mentorEl = document.getElementById('stat-mentorship-sessions');
+
+        if (streakEl) streakEl.textContent = `${devotionStreak} days`;
+        if (prayersEl) prayersEl.textContent = `${prayersAnswered}`;
+        if (mentorEl) mentorEl.textContent = `${mentorshipSessions}`;
+
+        const progress = computeFaithProgress({ devotionStreak, prayersAnswered, mentorshipSessions });
+        const progressBar = document.getElementById('faith-progress-bar');
+        const progressLabel = document.getElementById('faith-progress-label');
+
+        if (progressBar) progressBar.style.setProperty('--progress', `${progress}%`);
+        if (progressLabel) {
+          const rank = progress < 34 ? 'Beginner' : (progress < 67 ? 'Warrior' : 'Hero');
+          progressLabel.textContent = `${rank} (${progress}%)`;
+        }
+      } catch (err) {
+        console.error('Failed to load profile', err);
+      }
+    }
+
+    // Keep real stats alive (lastActive + activity tracking)
+    async function pingActivity() {
+      try {
+        await fetch(`${API_URL}/activity/ping`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    // Notifications (school-event only)
+    let notifOpen = false;
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function setNotifCount(n) {
+      const el = document.getElementById('notifCount');
+      if (!el) return;
+      const count = Number(n || 0);
+      if (count > 0) {
+        el.textContent = String(Math.min(count, 99));
+        el.classList.remove('hidden');
+      } else {
+        el.textContent = '';
+        el.classList.add('hidden');
+      }
+    }
+
+    async function fetchNotifications({ unreadOnly = false } = {}) {
+      const btn = document.getElementById('notifBtn');
+      if (!btn) return { items: [], unreadCount: 0 };
+
+      const qs = new URLSearchParams();
+      if (unreadOnly) qs.set('unread', 'true');
+      qs.set('limit', '30');
+
+      const res = await fetch(`${API_URL}/notifications?${qs.toString()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || 'Failed to load notifications');
+      const items = Array.isArray(data.data) ? data.data : [];
+      const unreadCount = unreadOnly ? items.length : items.filter(x => !x.readAt).length;
+      return { items, unreadCount };
+    }
+
+    function renderNotifications(items) {
+      const list = document.getElementById('notifList');
+      if (!list) return;
+      if (!items.length) {
+        list.innerHTML = '<div class="p-4 text-sm text-gray-500">No notifications yet.</div>';
+        return;
+      }
+
+      list.innerHTML = items.map((n) => {
+        const unread = !n.readAt;
+        const when = n.createdAt ? new Date(n.createdAt).toLocaleString() : '';
+        return `
+          <button data-notif-id="${escapeHtml(n._id)}" class="w-full text-left px-4 py-3 border-b border-white/5 hover:bg-white/5 transition">
+            <div class="flex items-start gap-3">
+              <div class="mt-1 w-2 h-2 rounded-full ${unread ? 'bg-luxuryGold' : 'bg-gray-700'}"></div>
+              <div class="min-w-0 flex-1">
+                <div class="text-sm font-bold text-white truncate">${escapeHtml(n.title || 'Notification')}</div>
+                <div class="text-xs text-gray-400 mt-1 line-clamp-2">${escapeHtml(n.body || '')}</div>
+                <div class="text-[10px] text-gray-600 mt-2">${escapeHtml(when)}</div>
+              </div>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    async function refreshNotifications() {
+      try {
+        const { items, unreadCount } = await fetchNotifications({ unreadOnly: false });
+        setNotifCount(unreadCount);
+        if (notifOpen) renderNotifications(items);
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    async function markAllNotificationsRead() {
+      await fetch(`${API_URL}/notifications/mark-all-read`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      await refreshNotifications();
+    }
+
+    async function markNotificationRead(id) {
+      await fetch(`${API_URL}/notifications/${id}/read`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      await refreshNotifications();
+    }
+
+    // NEW: Load Upcoming Events
+    async function loadUpcomingEvents() {
+      const container = document.getElementById('events-grid');
+      try {
+        // National feed: show upcoming events from all schools + national events.
+        // Notifications are still school-only (backend creates notifications only for school events).
+        const res = await fetch('http://localhost:5000/api/events/upcoming');
+        const result = await res.json();
+
+        if (!result.success || !result.data) {
+            throw new Error(result.message || 'Failed to load events');
+        }
+
+        const events = result.data;
+        container.innerHTML = ''; // Clear loading placeholder
+
+        if (events.length === 0) {
+          container.innerHTML = '<p class="text-gray-400 italic col-span-full text-center">No upcoming events yet - Imana is preparing something great!</p>';
+          return;
+        }
+
+        // Show only the first 3 events on the dashboard
+        events.slice(0, 3).forEach(event => {
+          const card = document.createElement('div');
+          card.className = 'group relative rounded-3xl overflow-hidden aspect-[3/4] bg-accentGreen border border-luxuryGold/10 transition-all duration-500 hover:shadow-[0_0_40px_rgba(212,175,55,0.3)] hover:scale-105';
+          
+          const eventDate = new Date(event.dateTime);
+          const formattedDate = eventDate.toLocaleString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit'
+          });
+
+          // Use poster if available, otherwise a placeholder gradient
+          const background = event.poster 
+            ? `<img src="${event.poster}" alt="${event.title}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">`
+            : `<div class="absolute inset-0 bg-gradient-to-br from-luxuryGold/10 to-accentGreen"></div>`;
+
+          card.innerHTML = `
+            ${background}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent"></div>
+            <div class="relative h-full flex flex-col justify-end p-6 md:p-8">
+                <h4 class="text-2xl font-bold text-white mb-2 line-clamp-2">${event.title}</h4>
+                <p class="text-xs text-luxuryGold font-bold tracking-widest mb-4">${formattedDate}</p>
+                <p class="text-sm text-gray-300 font-light mb-6 line-clamp-3">${event.description || 'More details to come.'}</p>
+                <div class="flex items-center gap-3">
+                  <button data-action="rsvp-going" data-event-id="${event._id}" class="px-7 py-3 bg-luxuryGold text-black text-[10px] font-black rounded-full tracking-widest self-start transition-transform group-hover:scale-105">
+                      RSVP GOING
+                  </button>
+                  <span class="text-[10px] text-gray-400 font-bold tracking-widest">${Number(event.rsvpCount || 0)} going</span>
+                </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error('Failed to load events', err);
+        container.innerHTML = '<p class="text-red-500 col-span-full text-center">Could not load events. Please check your connection and try again.</p>';
+      }
+    }
+
+    // Call functions on load
+    window.addEventListener('load', () => {
+        AOS.init({ duration: 1000, once: true });
+        loadMe();
+        pingActivity();
+        loadUpcomingEvents();
+        refreshNotifications();
+        setInterval(refreshNotifications, 15000);
+
+        const notifBtn = document.getElementById('notifBtn');
+        const notifMenu = document.getElementById('notifMenu');
+        const notifMarkAll = document.getElementById('notifMarkAll');
+        const notifList = document.getElementById('notifList');
+
+        notifBtn?.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          notifOpen = !notifOpen;
+          notifMenu?.classList.toggle('hidden', !notifOpen);
+          if (notifOpen) {
+            try {
+              const { items } = await fetchNotifications({ unreadOnly: false });
+              renderNotifications(items);
+            } catch (err) {
+              if (notifList) notifList.innerHTML = `<div class="p-4 text-sm text-red-400">${escapeHtml(err.message || 'Failed')}</div>`;
+            }
+          }
+        });
+
+        notifMarkAll?.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await markAllNotificationsRead();
+        });
+
+        notifList?.addEventListener('click', async (e) => {
+          const btn = e.target.closest('button[data-notif-id]');
+          if (!btn) return;
+          const id = btn.getAttribute('data-notif-id');
+          await markNotificationRead(id);
+          notifOpen = false;
+          notifMenu?.classList.add('hidden');
+        });
+
+        document.addEventListener('click', () => {
+          if (!notifOpen) return;
+          notifOpen = false;
+          notifMenu?.classList.add('hidden');
+        });
+
+        // Logout
+        document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = 'login.html';
+        });
+
+        // RSVP buttons (event delegation)
+        document.getElementById('events-grid')?.addEventListener('click', async (e) => {
+          const btn = e.target.closest('button[data-action^=\"rsvp-\"]');
+          if (!btn) return;
+
+          const eventId = btn.getAttribute('data-event-id');
+          const token = localStorage.getItem('token');
+          if (!token) {
+            window.location.href = 'login.html';
+            return;
+          }
+
+          try {
+            btn.disabled = true;
+            const res = await fetch(`${API_URL}/events/${eventId}/rsvp`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ status: 'going' })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'RSVP failed');
+            // Reload events to update counts
+            loadUpcomingEvents();
+          } catch (err) {
+            alert(err.message || 'Could not RSVP');
+          } finally {
+            btn.disabled = false;
+          }
+        });
+
+        // Destinations: settings/profile/search/growth/journal
+        document.getElementById('settingsBtn')?.addEventListener('click', () => {
+          window.location.href = 'dashboard/profile.html';
+        });
+        document.getElementById('profileBtn')?.addEventListener('click', () => {
+          window.location.href = 'dashboard/profile.html';
+        });
+        document.getElementById('searchBtn')?.addEventListener('click', () => {
+          window.location.href = 'calendar.html';
+        });
+        document.getElementById('growthDetailsBtn')?.addEventListener('click', () => {
+          window.location.href = 'dashboard/profile.html';
+        });
+        document.getElementById('unlockNextBtn')?.addEventListener('click', () => {
+          window.location.href = 'player.html?session=morning';
+        });
+
+        document.getElementById('reflectBtn')?.addEventListener('click', () => {
+          const title = encodeURIComponent("Iri jambo ry'uyu munsi");
+          const ref = encodeURIComponent('ABAFILIPI 2:13');
+          const text = encodeURIComponent('"Kuko Imana ari yo itera gukunda no gukora ibyo yishimira..."');
+          window.location.href = `journal.html?title=${title}&ref=${ref}&text=${text}&mood=neutral`;
+        });
+
+        document.getElementById('moodBlessedBtn')?.addEventListener('click', () => {
+          window.location.href = 'player.html?session=morning';
+        });
+        document.getElementById('moodComfortBtn')?.addEventListener('click', () => {
+          window.location.href = 'player.html?session=soaking';
+        });
+        document.getElementById('moodBattleBtn')?.addEventListener('click', () => {
+          window.location.href = 'player.html?session=revival';
+        });
+
+        // Minimal language toggle (stored for future expansion)
+        const langBtn = document.getElementById('langBtn');
+        const langKey = 'ryw_lang';
+        function applyLang(lang) {
+          localStorage.setItem(langKey, lang);
+          if (langBtn) langBtn.textContent = (lang === 'rw') ? 'ENGLISH' : 'KINYARWANDA';
+        }
+        applyLang(localStorage.getItem(langKey) || 'rw');
+        langBtn?.addEventListener('click', () => {
+          const next = (localStorage.getItem(langKey) || 'rw') === 'rw' ? 'en' : 'rw';
+          applyLang(next);
+        });
+    });
+</script>
+
+</body>
+</html>

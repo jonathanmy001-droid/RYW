@@ -1,0 +1,326 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile | Rwandan Youth Worship</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxuryGold: '#D4AF37',
+            luxuryDark: '#0B1F1A',
+            deepBlack: '#050A0A',
+            faithGreen: '#1E8449',
+            softGray: '#2D3748'
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.8s ease-out forwards'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #050A0A, #0B1F1A);
+      color: #e9edef;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    
+    .progress {
+      background: conic-gradient(#D4AF37 var(--progress), #2D3748 var(--progress) 100%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #D4AF37;
+    }
+  </style>
+</head>
+<body class="p-6">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center mb-10">
+    <h1 class="text-3xl sm:text-4xl font-bold text-luxuryGold">
+      My Profile
+    </h1>
+    <button onclick="logout()" class="px-6 py-2 bg-red-600/80 text-white rounded-full hover:bg-red-700 transition">
+      Logout
+    </button>
+  </header>
+
+  <!-- Profile Header -->
+  <div class="text-center mb-12">
+    <div class="w-32 h-32 bg-faithGreen rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white">
+      <span id="userInitials">MU</span>
+    </div>
+    <h2 class="text-3xl font-bold text-luxuryGold mb-2" id="userFullName">Muco Uwimana</h2>
+    <p class="text-gray-400">G.S. Kagugu â€¢ Kigali</p>
+  </div>
+
+  <!-- AI Spiritual Coach -->
+  <section class="bg-softGray/50 p-6 rounded-2xl mb-8" style="animation: fade-in 0.8s ease-out forwards">
+    <h3 class="text-2xl font-bold text-luxuryGold mb-4">Your Spiritual AI Coach</h3>
+    <p id="aiCoachMessage" class="text-lg text-gray-300 italic">
+      "Well done, faithful servant! Your devotion streak is inspiring. Keep sharing in chats â€“ Imana is using you."
+    </p>
+  </section>
+
+  <!-- Stats Grid -->
+  <section class="grid grid-cols-2 gap-6">
+    <div class="bg-luxuryDark/80 p-6 rounded-2xl text-center" style="animation: fade-in 0.8s ease-out 0.2s forwards">
+      <div id="progress-chat" class="progress mx-auto mb-4" style="--progress: 0%;">0%</div>
+      <h4 class="text-xl font-bold text-luxuryGold mb-2">Chat Participation</h4>
+      <p id="stat-chat" class="text-gray-400">0 messages sent</p>
+    </div>
+
+    <div class="bg-luxuryDark/80 p-6 rounded-2xl text-center" style="animation: fade-in 0.8s ease-out 0.4s forwards">
+      <div id="progress-events" class="progress mx-auto mb-4" style="--progress: 0%;">0%</div>
+      <h4 class="text-xl font-bold text-luxuryGold mb-2">Event Attendance</h4>
+      <p id="stat-events" class="text-gray-400">0 events joined</p>
+    </div>
+
+    <div class="bg-luxuryDark/80 p-6 rounded-2xl text-center" style="animation: fade-in 0.8s ease-out 0.6s forwards">
+      <div id="progress-devotions" class="progress mx-auto mb-4" style="--progress: 0%;">0%</div>
+      <h4 class="text-xl font-bold text-luxuryGold mb-2">Devotion Streak</h4>
+      <p id="stat-devotions" class="text-gray-400">0 days consistent</p>
+    </div>
+
+    <div class="bg-luxuryDark/80 p-6 rounded-2xl text-center" style="animation: fade-in 0.8s ease-out 0.8s forwards">
+      <div id="progress-prayers" class="progress mx-auto mb-4" style="--progress: 0%;">0%</div>
+      <h4 class="text-xl font-bold text-luxuryGold mb-2">Prayer Impact</h4>
+      <p id="stat-prayers" class="text-gray-400">0 prayers answered</p>
+    </div>
+  </section>
+
+  <!-- Edit Profile -->
+  <section class="mt-12">
+    <button id="editProfileBtn" class="w-full py-4 bg-faithGreen text-white font-bold rounded-full shadow-xl hover:bg-faithGreen/90 transition">
+      Edit Profile & Bio
+    </button>
+  </section>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="hidden fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-black/70"></div>
+    <div class="relative max-w-xl mx-auto mt-24 bg-luxuryDark/95 border border-luxuryGold/20 rounded-2xl p-6 shadow-2xl">
+      <div class="flex items-center justify-between gap-4">
+        <h3 class="text-2xl font-bold text-luxuryGold">Edit Profile</h3>
+        <button id="closeEditModal" class="text-gray-400 hover:text-white text-xl">×</button>
+      </div>
+
+      <form id="editForm" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-sm font-bold text-gray-300 mb-2">Bio</label>
+          <textarea id="bioInput" rows="4" maxlength="500" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white outline-none focus:border-luxuryGold" placeholder="A short bio..."></textarea>
+          <div class="text-xs text-gray-500 mt-1"><span id="bioCount">0</span>/500</div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-300 mb-2">Phone</label>
+            <input id="phoneInput" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white outline-none focus:border-luxuryGold" placeholder="+250..." />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-300 mb-2">Language</label>
+            <select id="langInput" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white outline-none focus:border-luxuryGold">
+              <option value="rw">Kinyarwanda</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-gray-300 mb-2">Avatar URL</label>
+          <input id="avatarInput" class="w-full p-3 rounded-xl bg-black/30 border border-white/10 text-white outline-none focus:border-luxuryGold" placeholder="https://..." />
+          <div class="text-xs text-gray-500 mt-1">Optional. If empty, initials will be used.</div>
+        </div>
+
+        <div class="pt-2 flex gap-3 justify-end">
+          <button type="button" id="cancelEdit" class="px-5 py-3 rounded-full border border-white/10 text-gray-200 hover:bg-white/5 transition">Cancel</button>
+          <button id="saveEdit" type="submit" class="px-6 py-3 rounded-full bg-luxuryGold text-black font-bold hover:bg-white transition">Save</button>
+        </div>
+        <div id="editStatus" class="text-sm text-gray-400"></div>
+      </form>
+    </div>
+  </div>
+
+  <p class="mt-12 text-center text-gray-500 text-sm">
+    Your journey is beautiful. Imana ikomeze kugukunda nawe!
+  </p>
+
+  <script>
+    // Basic auth check
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+    const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (!token) {
+      alert('Please login first to access your profile');
+      window.location.href = '../login.html';
+    }
+
+    function clamp(n, min, max) {
+      return Math.min(max, Math.max(min, n));
+    }
+
+    function setProgress(el, percent) {
+      if (!el) return;
+      const p = clamp(Math.round(Number(percent) || 0), 0, 100);
+      el.style.setProperty('--progress', `${p}%`);
+      el.textContent = `${p}%`;
+    }
+
+    function fillProfile(user) {
+      if (user?.firstName) {
+        document.getElementById('userFullName').textContent = `${user.firstName} ${user.lastName || ''}`.trim();
+        document.getElementById('userInitials').textContent = (user.firstName[0] || '') + ((user.lastName || '')[0] || '');
+      }
+
+      const schoolEl = document.querySelector('.text-center.mb-12 p.text-gray-400');
+      if (schoolEl) {
+        const schoolName = user?.school?.name || 'School';
+        const province = user?.school?.province || 'Province';
+        schoolEl.textContent = `${schoolName} \u2022 ${province}`;
+      }
+
+      const devotionStreak = Number(user?.devotionStreak || 0);
+      const prayersAnswered = Number(user?.prayersAnswered || 0);
+      const mentorshipSessions = Number(user?.mentorshipSessions || 0);
+
+      const messagesSent = Number(user?.messagesSent || 0);
+      const eventsJoined = Number(user?.eventsJoined || 0);
+
+      document.getElementById('stat-chat').textContent = `${messagesSent} messages sent`;
+      document.getElementById('stat-events').textContent = `${eventsJoined} events joined`;
+      document.getElementById('stat-devotions').textContent = `${devotionStreak} days consistent`;
+      document.getElementById('stat-prayers').textContent = `${prayersAnswered} prayers answered`;
+
+      setProgress(document.getElementById('progress-chat'), clamp(messagesSent, 0, 100));
+      setProgress(document.getElementById('progress-events'), clamp(eventsJoined * 10, 0, 100));
+      setProgress(document.getElementById('progress-devotions'), clamp(devotionStreak * 4, 0, 100));
+      setProgress(document.getElementById('progress-prayers'), clamp(prayersAnswered * 10, 0, 100));
+
+      let message = 'Keep going! Your light is shining.';
+      if (mentorshipSessions > 0) message = 'Keep connecting with mentors. Growth accelerates with guidance.';
+      if (devotionStreak >= 7) message = 'Your devotion consistency is strong. Keep building the altar daily.';
+      if (devotionStreak >= 21) message = 'Amazing devotion. You are growing steady in faith.';
+      document.getElementById('aiCoachMessage').textContent = message;
+    }
+
+    async function loadMe() {
+      if (cachedUser && cachedUser.firstName) fillProfile(cachedUser);
+
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to load profile');
+
+        const user = data.user || {};
+        localStorage.setItem('user', JSON.stringify(user));
+        fillProfile(user);
+      } catch (err) {
+        console.error('Failed to load profile', err);
+      }
+    }
+
+    loadMe();
+
+    // Edit modal wiring
+    const editBtn = document.getElementById('editProfileBtn');
+    const modal = document.getElementById('editModal');
+    const closeBtn = document.getElementById('closeEditModal');
+    const cancelBtn = document.getElementById('cancelEdit');
+    const editForm = document.getElementById('editForm');
+
+    const bioInput = document.getElementById('bioInput');
+    const bioCount = document.getElementById('bioCount');
+    const phoneInput = document.getElementById('phoneInput');
+    const langInput = document.getElementById('langInput');
+    const avatarInput = document.getElementById('avatarInput');
+    const editStatus = document.getElementById('editStatus');
+
+    function setBioCount() {
+      bioCount.textContent = String((bioInput.value || '').length);
+    }
+
+    function openModal() {
+      const u = JSON.parse(localStorage.getItem('user') || '{}');
+      bioInput.value = String(u.bio || '');
+      phoneInput.value = String(u.phone || '');
+      avatarInput.value = String(u.avatarUrl || '');
+      langInput.value = (u.preferredLanguage === 'en') ? 'en' : 'rw';
+      setBioCount();
+      editStatus.textContent = '';
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+    }
+
+    editBtn?.addEventListener('click', openModal);
+    closeBtn?.addEventListener('click', closeModal);
+    cancelBtn?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    bioInput?.addEventListener('input', setBioCount);
+
+    editForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!token) return;
+      try {
+        editStatus.textContent = 'Saving...';
+        const res = await fetch(`${API_URL}/auth/me`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            bio: bioInput.value,
+            phone: phoneInput.value,
+            avatarUrl: avatarInput.value,
+            preferredLanguage: langInput.value
+          })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || 'Failed to save');
+
+        const user = data.user || data;
+        localStorage.setItem('user', JSON.stringify(user));
+        fillProfile(user);
+        editStatus.textContent = 'Saved.';
+        setTimeout(closeModal, 400);
+      } catch (err) {
+        editStatus.textContent = err.message || 'Save failed.';
+      }
+    });
+
+function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      alert('Logged out. Come back soon!');
+      window.location.href = '../login.html';
+    }
+  </script>
+</body>
+</html>

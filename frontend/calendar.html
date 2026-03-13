@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendar | RYW</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            luxuryGold: '#D4AF37',
+            luxuryDark: '#050F0D',
+            accentGreen: '#0B1F1A'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+    h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050F0D; }
+    ::-webkit-scrollbar-thumb { background: #D4AF37; }
+  </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+  <header class="sticky top-0 z-30 bg-luxuryDark/90 backdrop-blur border-b border-luxuryGold/10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="worship.html#events" class="w-10 h-10 rounded-xl border border-luxuryGold/15 bg-white/[0.03] flex items-center justify-center hover:border-luxuryGold transition">
+          <i class="ri-arrow-left-line text-luxuryGold text-xl"></i>
+        </a>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black">Calendar</h1>
+          <p class="text-xs text-gray-500 tracking-widest uppercase">Upcoming worship events</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="refreshBtn" class="px-4 py-2 rounded-xl border border-luxuryGold/20 text-luxuryGold text-xs font-black tracking-widest hover:bg-luxuryGold/10 transition">
+          REFRESH
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="md:col-span-2 bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-6">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold">Browse Events</h2>
+            <p class="text-sm text-gray-400">National events and school events from across Rwanda.</p>
+          </div>
+          <div class="text-xs text-gray-500">
+            <span class="text-luxuryGold font-black" id="countLabel">0</span> events
+          </div>
+        </div>
+        <div class="mt-5 flex items-center gap-2">
+          <input id="search" class="w-full px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold" placeholder="Search by title..." />
+        </div>
+      </div>
+      <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-6">
+        <h3 class="text-sm font-black tracking-widest text-luxuryGold uppercase mb-3">Your Account</h3>
+        <p id="meLine" class="text-sm text-gray-300">Not logged in</p>
+        <p class="text-xs text-gray-500 mt-2">Login to RSVP and get school notifications.</p>
+        <div class="mt-4 flex items-center gap-2">
+          <a href="login.html" class="px-4 py-3 rounded-xl bg-luxuryGold text-black text-xs font-black tracking-widest">LOGIN</a>
+          <button id="logoutBtn" class="hidden px-4 py-3 rounded-xl border border-luxuryGold/20 text-red-400 text-xs font-black tracking-widest hover:bg-white/5">LOGOUT</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="col-span-full text-center p-10 text-gray-500">Loading events...</div>
+    </div>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+    let events = [];
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    async function loadMe() {
+      const meLine = document.getElementById('meLine');
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (!token) {
+        meLine.textContent = 'Not logged in';
+        logoutBtn.classList.add('hidden');
+        return;
+      }
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        const u = data.user || {};
+        meLine.textContent = `${u.firstName || ''} ${u.lastName || ''}`.trim() || (u.email || 'Logged in');
+        logoutBtn.classList.remove('hidden');
+      } catch {
+        meLine.textContent = 'Logged in';
+        logoutBtn.classList.remove('hidden');
+      }
+    }
+
+    function render(list) {
+      const grid = document.getElementById('grid');
+      document.getElementById('countLabel').textContent = String(list.length);
+
+      if (!list.length) {
+        grid.innerHTML = '<div class="col-span-full text-center p-10 text-gray-500">No events found.</div>';
+        return;
+      }
+
+      grid.innerHTML = list.map((e) => {
+        const when = new Date(e.dateTime).toLocaleString('en-US', { weekday:'short', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+        const scope = e.school ? (e.school.name || 'School') : 'National';
+        const poster = e.poster
+          ? `<img src="${escapeHtml(e.poster)}" class="absolute inset-0 w-full h-full object-cover" alt="${escapeHtml(e.title)}" />`
+          : `<div class="absolute inset-0 bg-gradient-to-br from-luxuryGold/10 to-accentGreen"></div>`;
+
+        return `
+          <div class="relative overflow-hidden rounded-3xl border border-luxuryGold/10 bg-white/[0.03]">
+            <div class="relative h-48">
+              ${poster}
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="text-[10px] font-black tracking-widest text-luxuryGold uppercase">${escapeHtml(scope)}</div>
+                <div class="text-lg font-black text-white leading-tight">${escapeHtml(e.title)}</div>
+                <div class="text-xs text-gray-300 mt-1">${escapeHtml(when)}</div>
+              </div>
+            </div>
+            <div class="p-5">
+              <p class="text-sm text-gray-400 line-clamp-3">${escapeHtml(e.description || '')}</p>
+              <div class="mt-4 flex items-center justify-between gap-3">
+                <div class="text-xs text-gray-500"><span class="text-luxuryGold font-black">${Number(e.rsvpCount || 0)}</span> going</div>
+                <button data-action="rsvp-going" data-event-id="${e._id}" class="px-4 py-2 rounded-full bg-luxuryGold text-black text-[10px] font-black tracking-widest hover:bg-white transition">
+                  RSVP GOING
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadEvents() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '<div class="col-span-full text-center p-10 text-gray-500">Loading events...</div>';
+      const res = await fetch(`${API_URL}/events/upcoming`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to load');
+      events = Array.isArray(data.data) ? data.data : [];
+      applySearch();
+    }
+
+    function applySearch() {
+      const q = String(document.getElementById('search').value || '').trim().toLowerCase();
+      const list = q ? events.filter(e => String(e.title || '').toLowerCase().includes(q)) : events;
+      render(list);
+    }
+
+    document.getElementById('search').addEventListener('input', applySearch);
+    document.getElementById('refreshBtn').addEventListener('click', () => loadEvents().catch(err => alert(err.message || 'Failed')));
+
+    document.getElementById('grid').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action=\"rsvp-going\"]');
+      if (!btn) return;
+      if (!token) { window.location.href = 'login.html'; return; }
+      const eventId = btn.getAttribute('data-event-id');
+      try {
+        btn.disabled = true;
+        const res = await fetch(`${API_URL}/events/${eventId}/rsvp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ status: 'going' })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'RSVP failed');
+        await loadEvents();
+      } catch (err) {
+        alert(err.message || 'RSVP failed');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    });
+
+    loadMe();
+    loadEvents().catch((err) => {
+      document.getElementById('grid').innerHTML = `<div class="col-span-full text-center p-10 text-red-400">${escapeHtml(err.message || 'Failed')}</div>`;
+    });
+  </script>
+</body>
+</html>
+
