@@ -96,8 +96,8 @@
         </a>
     </nav>
     <div class="hidden lg:flex flex-col mt-auto gap-6 items-center">
-        <button class="text-gray-500 hover:text-luxuryGold transition-all"><i class="ri-settings-4-line text-2xl"></i></button>
-        <button class="w-12 h-12 rounded-full border-2 border-luxuryGold/20 overflow-hidden hover:border-luxuryGold transition-all">
+        <button id="settingsBtn" class="text-gray-500 hover:text-luxuryGold transition-all"><i class="ri-settings-4-line text-2xl"></i></button>
+        <button id="profileBtn" class="w-12 h-12 rounded-full border-2 border-luxuryGold/20 overflow-hidden hover:border-luxuryGold transition-all">
             <img src="../../images/placeholder-avatar.jpg" alt="Profile" class="w-full h-full object-cover">  <!-- Update path if needed -->
         </button>
     </div>
@@ -111,11 +111,11 @@
             <p class="text-[10px] text-gray-500 uppercase tracking-widest">Kigali, Rwanda</p>
         </div>
         <div class="flex items-center gap-6">
-            <button class="relative text-gray-400 hover:text-luxuryGold transition">
+            <button id="notifBtn" class="relative text-gray-400 hover:text-luxuryGold transition">
                 <i class="ri-notification-3-line text-xl"></i>
                 <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-luxuryDark"></span>
             </button>
-            <button class="text-gray-400 hover:text-luxuryGold transition"><i class="ri-search-2-line text-xl"></i></button>
+            <button id="searchBtn" class="text-gray-400 hover:text-luxuryGold transition"><i class="ri-search-2-line text-xl"></i></button>
             <div class="h-8 w-[1px] bg-white/10 mx-2"></div>
             <button id="logoutBtn" class="text-xs font-bold tracking-widest text-red-500/70 hover:text-red-500 uppercase flex items-center gap-2">
                 <span class="hidden md:block">Logout</span>
@@ -162,11 +162,11 @@
                     <h3 class="text-2xl font-bold mb-3">Ingoma z'Imana — Live Soaking</h3>
                     <p class="text-gray-400 mb-4">Enter His presence right now. Let the Spirit move.</p>
                     <div class="flex gap-6 text-sm">
-                        <button class="flex items-center gap-2 text-luxuryGold hover:text-white transition">
-                            <i class="ri-heart-line"></i> Amen (124)
+                        <button id="amenBtn" class="flex items-center gap-2 text-luxuryGold hover:text-white transition">
+                            <i class="ri-heart-line"></i> Amen (<span id="amenCount">0</span>)
                         </button>
-                        <button class="flex items-center gap-2 text-luxuryGold hover:text-white transition">
-                            <i class="ri-pray-line"></i> Glory (89)
+                        <button id="gloryBtn" class="flex items-center gap-2 text-luxuryGold hover:text-white transition">
+                            <i class="ri-pray-line"></i> Glory (<span id="gloryCount">0</span>)
                         </button>
                     </div>
                 </div>
@@ -329,6 +329,53 @@
       localStorage.removeItem('user');
       window.location.href = 'login.html';
     });
+
+    // Header / sidebar destinations
+    function goProfile() {
+      const token = localStorage.getItem('token');
+      if (!token) { window.location.href = 'login.html'; return; }
+      window.location.href = 'dashboard/profile.html';
+    }
+
+    document.getElementById('settingsBtn')?.addEventListener('click', goProfile);
+    document.getElementById('profileBtn')?.addEventListener('click', goProfile);
+    document.getElementById('searchBtn')?.addEventListener('click', () => {
+      window.location.href = 'calendar.html';
+    });
+    document.getElementById('notifBtn')?.addEventListener('click', () => {
+      const token = localStorage.getItem('token');
+      if (!token) { window.location.href = 'login.html'; return; }
+      localStorage.setItem('ryw_open_notifs', '1');
+      window.location.href = 'youth.html#hub';
+    });
+
+    // Reactions (DB-backed)
+    async function loadReactions() {
+      try {
+        const res = await fetch('http://localhost:5000/api/reactions/summary?targetType=worship&targetKey=live-featured');
+        const data = await res.json();
+        if (!res.ok) return;
+        const r = data.data || {};
+        document.getElementById('amenCount').textContent = String(Number(r.amen || 0));
+        document.getElementById('gloryCount').textContent = String(Number(r.glory || 0));
+      } catch {}
+    }
+
+    async function toggle(kind) {
+      const token = localStorage.getItem('token');
+      if (!token) { window.location.href = 'login.html'; return; }
+      await fetch('http://localhost:5000/api/reactions/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ targetType: 'worship', targetKey: 'live-featured', kind })
+      });
+      await loadReactions();
+    }
+
+    document.getElementById('amenBtn')?.addEventListener('click', () => toggle('amen'));
+    document.getElementById('gloryBtn')?.addEventListener('click', () => toggle('glory'));
+
+    loadReactions();
 </script>
 
 </body>

@@ -8,6 +8,7 @@ const { protect, superAdmin } = require('../middleware/authMiddleware');
 const AuditLog = require('../models/auditLog');
 const School = require('../models/school');
 const User = require('../models/user');
+const Resource = require('../models/resource');
 const { migratePrayerGroupsToChat } = require('../services/migratePrayerGroupsToChat');
 
 async function writeAudit({ actorId, action, targetType, targetId = null, meta = {} }) {
@@ -58,6 +59,65 @@ router.post('/migrations/prayer-chat', protect, superAdmin, async (req, res) => 
   } catch (err) {
     console.error('Migration prayer-chat error:', err);
     res.status(500).json({ success: false, message: 'Migration failed' });
+  }
+});
+
+// POST /api/admin/seeds/resources - create starter resources (safe upsert)
+router.post('/seeds/resources', protect, superAdmin, async (req, res) => {
+  try {
+    const seeds = [
+      {
+        title: 'Beginner Bible Plan (30 days)',
+        category: 'bible_plan',
+        description: 'A simple 30-day start. Read one chapter daily and write one reflection.',
+        url: 'https://www.bible.com/',
+      },
+      {
+        title: 'Worship Starter Playlist',
+        category: 'playlist',
+        description: 'A daily worship playlist to enter His presence.',
+        url: 'https://www.youtube.com/results?search_query=worship+playlist',
+      },
+      {
+        title: 'Prayer Basics Guide',
+        category: 'prayer',
+        description: 'Learn a simple structure for prayer: praise, repentance, ask, and surrender.',
+        url: '',
+      },
+      {
+        title: 'Mentorship: First Session Checklist',
+        category: 'mentorship',
+        description: 'Questions to ask, goals to set, and how to stay accountable.',
+        url: '',
+      },
+    ];
+
+    let created = 0;
+    let existed = 0;
+    for (const s of seeds) {
+      const r = await Resource.updateOne(
+        { title: s.title },
+        { $setOnInsert: { ...s, isActive: true, createdBy: req.user._id } },
+        { upsert: true }
+      );
+      if (r.upsertedCount) created += 1;
+      else existed += 1;
+    }
+
+    const result = { created, existed, totalSeeds: seeds.length };
+
+    await writeAudit({
+      actorId: req.user._id,
+      action: 'seed.resources',
+      targetType: 'System',
+      targetId: null,
+      meta: result,
+    });
+
+    res.json({ success: true, data: result });
+  } catch (err) {
+    console.error('Seed resources error:', err);
+    res.status(500).json({ success: false, message: 'Seed failed' });
   }
 });
 

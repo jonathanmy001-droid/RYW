@@ -116,9 +116,10 @@
     </div>
   </main>
 
-  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
-    const API_URL = 'http://localhost:5000/api';
+    const API_ORIGIN = localStorage.getItem('API_ORIGIN') || 'http://localhost:5000';
+    const API_URL = `${API_ORIGIN}/api`;
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
 
@@ -143,7 +144,7 @@
     }
 
     function connectSocket() {
-      const socket = io('http://localhost:5000', { auth: { token } });
+      const socket = io(API_ORIGIN, { auth: { token } });
 
       socket.on('connect', () => {
         el.socketStatus.textContent = 'Connected';
@@ -184,4 +185,3 @@
   </script>
 </body>
 </html>
-

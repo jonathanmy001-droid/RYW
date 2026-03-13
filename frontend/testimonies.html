@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Testimonies | RYW</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: { colors: { luxuryGold:'#D4AF37', luxuryDark:'#050F0D', accentGreen:'#0B1F1A' } } } }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+    h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050F0D; }
+    ::-webkit-scrollbar-thumb { background: #D4AF37; }
+  </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+  <header class="sticky top-0 z-30 bg-luxuryDark/90 backdrop-blur border-b border-luxuryGold/10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="youth.html#hub" class="w-10 h-10 rounded-xl border border-luxuryGold/15 bg-white/[0.03] flex items-center justify-center hover:border-luxuryGold transition">
+          <i class="ri-arrow-left-line text-luxuryGold text-xl"></i>
+        </a>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black">Community Fire</h1>
+          <p class="text-xs text-gray-500 tracking-widest uppercase">Real testimonies across the nation</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="refreshBtn" class="px-4 py-3 rounded-xl border border-luxuryGold/20 text-luxuryGold text-xs font-black tracking-widest hover:bg-luxuryGold/10 transition">REFRESH</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10 space-y-8">
+    <section class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-black">Share Your Testimony</h2>
+          <p class="text-sm text-gray-400">Encourage others with what God has done.</p>
+        </div>
+        <div class="text-xs text-gray-500">
+          <span id="meLine">Not logged in</span>
+        </div>
+      </div>
+
+      <form id="form" class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="md:col-span-3">
+          <textarea id="text" rows="3" maxlength="1000" class="w-full px-4 py-3 rounded-2xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold" placeholder="Write your testimony..."></textarea>
+          <div class="mt-2 flex items-center justify-between text-[11px] text-gray-500">
+            <label class="inline-flex items-center gap-2 cursor-pointer">
+              <input id="anon" type="checkbox" class="accent-luxuryGold">
+              <span>Post as anonymous</span>
+            </label>
+            <span><span id="count">0</span>/1000</span>
+          </div>
+        </div>
+        <div class="md:col-span-1 flex md:flex-col gap-3 md:justify-between">
+          <button id="postBtn" type="submit" class="flex-1 px-6 py-4 rounded-2xl bg-luxuryGold text-black text-[11px] font-black tracking-widest hover:bg-white transition">POST</button>
+          <a href="login.html" id="loginBtn" class="hidden flex-1 px-6 py-4 rounded-2xl border border-luxuryGold/20 text-luxuryGold text-[11px] font-black tracking-widest hover:bg-luxuryGold/10 transition text-center">LOGIN</a>
+        </div>
+      </form>
+      <div id="status" class="text-sm text-gray-400 mt-3"></div>
+    </section>
+
+    <section class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-black">Latest</h3>
+        <div class="text-xs text-gray-500"><span id="countLabel" class="text-luxuryGold font-black">0</span> testimonies</div>
+      </div>
+      <div id="grid" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-full text-center p-10 text-gray-500">Loading...</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    const token = localStorage.getItem('token');
+    const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    const meLine = document.getElementById('meLine');
+    const loginBtn = document.getElementById('loginBtn');
+    if (!token) {
+      meLine.textContent = 'Not logged in';
+      loginBtn.classList.remove('hidden');
+    } else {
+      const name = `${cachedUser.firstName || ''} ${cachedUser.lastName || ''}`.trim();
+      meLine.textContent = name || (cachedUser.email || 'Logged in');
+    }
+
+    const textEl = document.getElementById('text');
+    const countEl = document.getElementById('count');
+    textEl.addEventListener('input', () => { countEl.textContent = String(textEl.value.length); });
+    countEl.textContent = String(textEl.value.length);
+
+    async function load() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '<div class="col-span-full text-center p-10 text-gray-500">Loading...</div>';
+      const res = await fetch(`${API_URL}/testimonies?limit=30`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed');
+      const list = Array.isArray(data.data) ? data.data : [];
+      document.getElementById('countLabel').textContent = String(list.length);
+      if (!list.length) {
+        grid.innerHTML = '<div class="col-span-full text-center p-10 text-gray-500">No testimonies yet.</div>';
+        return;
+      }
+      grid.innerHTML = list.map((t) => {
+        const when = t.createdAt ? new Date(t.createdAt).toLocaleString() : '';
+        const author = t.isAnonymous ? 'Anonymous' : 'Worshipper';
+        const likeCount = Number(t.likeCount || 0);
+        return `
+          <div class="bg-black/30 border border-white/10 rounded-3xl p-6 hover:border-luxuryGold/30 transition">
+            <div class="text-xs text-gray-500">${escapeHtml(when)}</div>
+            <div class="mt-3 text-sm text-gray-200 italic">"${escapeHtml(t.text)}"</div>
+            <div class="mt-5 flex items-center justify-between">
+              <div class="text-[10px] font-black tracking-widest text-luxuryGold uppercase">${escapeHtml(author)}</div>
+              <button data-action="like" data-id="${escapeHtml(t._id)}" class="inline-flex items-center gap-2 text-gray-300 hover:text-red-400 transition text-sm">
+                <i class="ri-heart-3-fill"></i> <span>${likeCount}</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('grid').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action=\"like\"]');
+      if (!btn) return;
+      if (!token) { window.location.href = 'login.html'; return; }
+      const id = btn.getAttribute('data-id');
+      try {
+        btn.disabled = true;
+        const res = await fetch(`${API_URL}/testimonies/${id}/like`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        await load();
+      } catch (err) {
+        alert(err.message || 'Failed');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', () => load().catch(err => alert(err.message || 'Failed')));
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = document.getElementById('status');
+      status.textContent = '';
+      if (!token) { window.location.href = 'login.html'; return; }
+      const text = String(textEl.value || '').trim();
+      if (!text) { status.textContent = 'Write something first.'; return; }
+      try {
+        const postBtn = document.getElementById('postBtn');
+        postBtn.disabled = true;
+        status.textContent = 'Posting...';
+        const res = await fetch(`${API_URL}/testimonies`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ text, isAnonymous: Boolean(document.getElementById('anon').checked) })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || 'Failed');
+        textEl.value = '';
+        countEl.textContent = '0';
+        document.getElementById('anon').checked = false;
+        status.textContent = 'Posted.';
+        await load();
+        postBtn.disabled = false;
+      } catch (err) {
+        status.textContent = err.message || 'Failed.';
+      }
+    });
+
+    load().catch((err) => {
+      document.getElementById('grid').innerHTML = `<div class="col-span-full text-center p-10 text-red-400">${escapeHtml(err.message || 'Failed')}</div>`;
+    });
+  </script>
+</body>
+</html>
+

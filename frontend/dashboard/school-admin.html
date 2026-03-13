@@ -93,8 +93,8 @@
         </a>
     </nav>
     <div class="hidden lg:flex flex-col mt-auto gap-6 items-center">
-        <button class="text-gray-500 hover:text-luxuryGold transition-all"><i class="ri-settings-4-line text-2xl"></i></button>
-        <button class="w-12 h-12 rounded-full border-2 border-luxuryGold/20 overflow-hidden hover:border-luxuryGold transition-all">
+        <button id="settingsBtn" class="text-gray-500 hover:text-luxuryGold transition-all"><i class="ri-settings-4-line text-2xl"></i></button>
+        <button id="profileBtn" class="w-12 h-12 rounded-full border-2 border-luxuryGold/20 overflow-hidden hover:border-luxuryGold transition-all">
             <img src="../../images/placeholder-avatar.jpg" alt="Profile" class="w-full h-full object-cover">  <!-- Update path if needed -->
         </button>
     </div>
@@ -108,11 +108,11 @@
             <p class="text-[10px] text-gray-500 uppercase tracking-widest">Kigali, Rwanda</p>
         </div>
         <div class="flex items-center gap-6">
-            <button class="relative text-gray-400 hover:text-luxuryGold transition">
+            <button id="notifBtn" class="relative text-gray-400 hover:text-luxuryGold transition">
                 <i class="ri-notification-3-line text-xl"></i>
                 <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-luxuryDark"></span>
             </button>
-            <button class="text-gray-400 hover:text-luxuryGold transition"><i class="ri-search-2-line text-xl"></i></button>
+            <button id="searchBtn" class="text-gray-400 hover:text-luxuryGold transition"><i class="ri-search-2-line text-xl"></i></button>
             <div class="h-8 w-[1px] bg-white/10 mx-2"></div>
             <button id="logoutBtn" class="text-xs font-bold tracking-widest text-red-500/70 hover:text-red-500 uppercase flex items-center gap-2">
                 <span class="hidden md:block">Logout</span>
@@ -617,6 +617,23 @@
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '../login.html';
+    });
+
+    // Header / sidebar destinations
+    document.getElementById('settingsBtn')?.addEventListener('click', () => {
+      window.location.href = 'profile.html';
+    });
+    document.getElementById('profileBtn')?.addEventListener('click', () => {
+      window.location.href = 'profile.html';
+    });
+    document.getElementById('searchBtn')?.addEventListener('click', () => {
+      window.location.href = '../calendar.html';
+    });
+    document.getElementById('notifBtn')?.addEventListener('click', () => {
+      const token = localStorage.getItem('token');
+      if (!token) { window.location.href = '../login.html'; return; }
+      localStorage.setItem('ryw_open_notifs', '1');
+      window.location.href = '../youth.html#hub';
     });
 
     // Chat Groups (DB-backed)

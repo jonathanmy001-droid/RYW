@@ -223,9 +223,11 @@
     </div>
   </div>
 
-  <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
-    const API_URL = 'http://localhost:5000/api';
+    // Config: set `localStorage.API_ORIGIN` to override (example: http://localhost:5001).
+    const API_ORIGIN = localStorage.getItem('API_ORIGIN') || 'http://localhost:5000';
+    const API_URL = `${API_ORIGIN}/api`;
     const token = localStorage.getItem('token');
     if (!token) window.location.href = 'login.html';
 
@@ -391,9 +393,15 @@
     }
 
     async function loadGroups() {
-      const data = await api('/chat/groups', { method: 'GET' });
-      groups = Array.isArray(data.data) ? data.data : [];
-      renderGroups();
+      el.groupsList.innerHTML = `<div class="p-6 text-sm text-gray-400">Loading groups...</div>`;
+      try {
+        const data = await api('/chat/groups', { method: 'GET' });
+        groups = Array.isArray(data.data) ? data.data : [];
+        renderGroups();
+      } catch (err) {
+        groups = [];
+        el.groupsList.innerHTML = `<div class="p-6 text-sm text-red-300">${escapeHtml(err.message || 'Failed to load groups')}</div>`;
+      }
     }
 
     async function openGroup(groupId) {
@@ -488,19 +496,19 @@
                   <div class="space-y-2">
                     ${reqs.map((r) => {
                       const u = r.user || {};
-                      const name = \`\${u.firstName || ''} \${u.lastName || ''}\`.trim() || u.email || 'User';
-                      return \`
+                      const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email || 'User';
+                      return `
                         <div class="p-3 rounded-2xl bg-ink/40 border border-line flex items-center justify-between gap-3">
                           <div class="min-w-0">
-                            <div class="font-bold truncate">\${escapeHtml(name)}</div>
-                            <div class="text-[11px] text-gray-400 truncate">\${escapeHtml(u.email || '')}</div>
+                            <div class="font-bold truncate">${escapeHtml(name)}</div>
+                            <div class="text-[11px] text-gray-400 truncate">${escapeHtml(u.email || '')}</div>
                           </div>
                           <div class="flex items-center gap-2">
-                            <button data-approve-user="\${u._id}" class="px-3 py-2 rounded-xl bg-green text-black text-[10px] font-black tracking-widest hover:opacity-90 transition">APPROVE</button>
-                            <button data-reject-user="\${u._id}" class="px-3 py-2 rounded-xl border border-line bg-panel2 text-[10px] font-black tracking-widest text-red-300 hover:bg-panel transition">REJECT</button>
+                            <button data-approve-user="${u._id}" class="px-3 py-2 rounded-xl bg-green text-black text-[10px] font-black tracking-widest hover:opacity-90 transition">APPROVE</button>
+                            <button data-reject-user="${u._id}" class="px-3 py-2 rounded-xl border border-line bg-panel2 text-[10px] font-black tracking-widest text-red-300 hover:bg-panel transition">REJECT</button>
                           </div>
                         </div>
-                      \`;
+                      `;
                     }).join('')}
                   </div>
                 </div>
@@ -547,7 +555,13 @@
     }
 
     function connectSocket() {
-      socket = io('http://localhost:5000', { auth: { token } });
+      if (typeof io !== 'function') {
+        el.connDot.classList.remove('bg-green');
+        el.connDot.classList.add('bg-gray-600');
+        return;
+      }
+
+      socket = io(API_ORIGIN, { auth: { token } });
 
       socket.on('connect', () => {
         el.connDot.classList.remove('bg-gray-600');
@@ -664,8 +678,8 @@
     // Init
     (async function init() {
       await loadMe();
-      connectSocket();
       await loadGroups();
+      connectSocket();
     })().catch((err) => {
       console.error(err);
       alert(err.message || 'Failed to load chat');

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resources | RYW</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@200;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: { colors: { luxuryGold:'#D4AF37', luxuryDark:'#050F0D', accentGreen:'#0B1F1A' } } } }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #050F0D; overflow-x: hidden; }
+    h1, h2, h3, .cinzel { font-family: 'Playfair Display', serif; }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050F0D; }
+    ::-webkit-scrollbar-thumb { background: #D4AF37; }
+  </style>
+</head>
+<body class="text-gray-100 antialiased selection:bg-luxuryGold selection:text-black">
+
+  <header class="sticky top-0 z-30 bg-luxuryDark/90 backdrop-blur border-b border-luxuryGold/10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="youth.html#resources" class="w-10 h-10 rounded-xl border border-luxuryGold/15 bg-white/[0.03] flex items-center justify-center hover:border-luxuryGold transition">
+          <i class="ri-arrow-left-line text-luxuryGold text-xl"></i>
+        </a>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black">Resources</h1>
+          <p class="text-xs text-gray-500 tracking-widest uppercase">Curated paths for growth</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="category" class="px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white text-xs font-black tracking-widest outline-none focus:border-luxuryGold">
+          <option value="">ALL</option>
+          <option value="bible_plan">BIBLE PLAN</option>
+          <option value="playlist">PLAYLIST</option>
+          <option value="prayer">PRAYER</option>
+          <option value="mentorship">MENTORSHIP</option>
+          <option value="teaching">TEACHING</option>
+          <option value="other">OTHER</option>
+        </select>
+        <button id="refreshBtn" class="px-4 py-3 rounded-xl border border-luxuryGold/20 text-luxuryGold text-xs font-black tracking-widest hover:bg-luxuryGold/10 transition">REFRESH</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-6">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-black">Explore</h2>
+          <p class="text-sm text-gray-400">Open resources for every youth in Rwanda.</p>
+        </div>
+        <div class="text-xs text-gray-500"><span id="count" class="text-luxuryGold font-black">0</span> items</div>
+      </div>
+      <div class="mt-5">
+        <input id="search" class="w-full px-4 py-3 rounded-xl bg-black/30 border border-luxuryGold/15 text-white placeholder-gray-500 outline-none focus:border-luxuryGold" placeholder="Search resources..." />
+      </div>
+    </div>
+
+    <div id="grid" class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="col-span-full text-center p-10 text-gray-500">Loading resources...</div>
+    </div>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    let items = [];
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+
+    function catLabel(c) {
+      return ({
+        bible_plan: 'BIBLE PLAN',
+        playlist: 'PLAYLIST',
+        prayer: 'PRAYER',
+        mentorship: 'MENTORSHIP',
+        teaching: 'TEACHING',
+        other: 'OTHER'
+      })[c] || 'OTHER';
+    }
+
+    function applySearch() {
+      const q = String(document.getElementById('search').value || '').trim().toLowerCase();
+      const list = q ? items.filter(x => String(x.title || '').toLowerCase().includes(q)) : items;
+      render(list);
+    }
+
+    function render(list) {
+      const grid = document.getElementById('grid');
+      document.getElementById('count').textContent = String(list.length);
+      if (!list.length) {
+        grid.innerHTML = '<div class="col-span-full text-center p-10 text-gray-500">No resources found.</div>';
+        return;
+      }
+      grid.innerHTML = list.map((r) => {
+        const when = r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '';
+        const url = r.url ? String(r.url) : '';
+        const openBtn = url
+          ? `<a target="_blank" rel="noopener noreferrer" href="${escapeHtml(url)}" class="inline-flex px-5 py-3 rounded-full bg-luxuryGold text-black text-[10px] font-black tracking-widest hover:bg-white transition">OPEN</a>`
+          : `<span class="text-[10px] text-gray-500 font-black tracking-widest">NO LINK</span>`;
+        return `
+          <div class="bg-white/[0.03] border border-luxuryGold/10 rounded-3xl p-6 hover:border-luxuryGold/30 transition">
+            <div class="text-[10px] font-black tracking-widest text-luxuryGold uppercase">${escapeHtml(catLabel(r.category))}</div>
+            <div class="text-xl font-black mt-2">${escapeHtml(r.title)}</div>
+            <div class="text-sm text-gray-400 mt-3">${escapeHtml(r.description || '')}</div>
+            <div class="mt-5 flex items-center justify-between gap-3">
+              <div class="text-[10px] text-gray-600">${escapeHtml(when)}</div>
+              ${openBtn}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function load() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '<div class="col-span-full text-center p-10 text-gray-500">Loading resources...</div>';
+      const cat = String(document.getElementById('category').value || '').trim();
+      const url = cat ? `${API_URL}/resources?limit=50&category=${encodeURIComponent(cat)}` : `${API_URL}/resources?limit=50`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed');
+      items = Array.isArray(data.data) ? data.data : [];
+      applySearch();
+    }
+
+    document.getElementById('search').addEventListener('input', applySearch);
+    document.getElementById('category').addEventListener('change', () => load().catch(err => alert(err.message || 'Failed')));
+    document.getElementById('refreshBtn').addEventListener('click', () => load().catch(err => alert(err.message || 'Failed')));
+
+    // Preselect category from query string (e.g. resources.html?category=prayer)
+    const params = new URLSearchParams(window.location.search);
+    const qCat = String(params.get('category') || '').trim();
+    if (qCat) document.getElementById('category').value = qCat;
+
+    load().catch((err) => {
+      document.getElementById('grid').innerHTML = `<div class="col-span-full text-center p-10 text-red-400">${escapeHtml(err.message || 'Failed')}</div>`;
+    });
+  </script>
+</body>
+</html>

@@ -250,6 +250,18 @@
   // Call when page loads
   window.addEventListener('load', loadSchools);
 
+  // Optional: preselect role from query string (e.g. register.html?role=pastor)
+  (function preselectRole() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const role = String(params.get('role') || '').trim();
+      if (role && ['youth', 'school_admin', 'pastor'].includes(role)) {
+        const sel = document.getElementById('role');
+        if (sel) sel.value = role;
+      }
+    } catch {}
+  })();
+
   // ────────────────────────────────────────────────
   //  2. Real registration + clean reset after success
   // ────────────────────────────────────────────────

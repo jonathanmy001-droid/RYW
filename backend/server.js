@@ -27,6 +27,9 @@ const notificationRoutes = require('./routes/notifications');
 const activityRoutes = require('./routes/activity');
 const publicRoutes = require('./routes/public');
 const journalRoutes = require('./routes/journal');
+const reactionRoutes = require('./routes/reactions');
+const resourcesRoutes = require('./routes/resources');
+const testimoniesRoutes = require('./routes/testimonies');
 
 // Socket handlers
 const initializeGroupChat = require('./socket/groupChatHandler');
@@ -58,6 +61,9 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/journal', journalRoutes);
+app.use('/api/reactions', reactionRoutes);
+app.use('/api/resources', resourcesRoutes);
+app.use('/api/testimonies', testimoniesRoutes);
 
 app.get('/', (req, res) => {
   res.json({
