@@ -30,6 +30,9 @@ const journalRoutes = require('./routes/journal');
 const reactionRoutes = require('./routes/reactions');
 const resourcesRoutes = require('./routes/resources');
 const testimoniesRoutes = require('./routes/testimonies');
+const pastorRoutes = require('./routes/pastor');
+const questionsRoutes = require('./routes/questions');
+const mentorshipRoutes = require('./routes/mentorship');
 
 // Socket handlers
 const initializeGroupChat = require('./socket/groupChatHandler');
@@ -64,6 +67,9 @@ app.use('/api/journal', journalRoutes);
 app.use('/api/reactions', reactionRoutes);
 app.use('/api/resources', resourcesRoutes);
 app.use('/api/testimonies', testimoniesRoutes);
+app.use('/api/pastor', pastorRoutes);
+app.use('/api/questions', questionsRoutes);
+app.use('/api/mentorship', mentorshipRoutes);
 
 app.get('/', (req, res) => {
   res.json({
