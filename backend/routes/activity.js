@@ -62,5 +62,17 @@ router.post('/mentorship-session', protect, async (req, res) => {
   }
 });
 
-module.exports = router;
+// POST /api/activity/joy-challenge-done (any logged in)
+router.post('/joy-challenge-done', protect, async (req, res) => {
+  try {
+    const key = String(req.body?.key || '').trim().slice(0, 40);
+    await User.updateOne({ _id: req.user._id }, { $set: { lastActive: new Date() } });
+    await record(req, 'joy_challenge_done', { key });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Joy challenge error:', err);
+    res.status(500).json({ success: false, message: 'Error recording challenge' });
+  }
+});
 
+module.exports = router;

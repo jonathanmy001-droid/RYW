@@ -33,6 +33,8 @@ const testimoniesRoutes = require('./routes/testimonies');
 const pastorRoutes = require('./routes/pastor');
 const questionsRoutes = require('./routes/questions');
 const mentorshipRoutes = require('./routes/mentorship');
+const wallRoutes = require('./routes/wall');
+const missionsRoutes = require('./routes/missions');
 
 // Socket handlers
 const initializeGroupChat = require('./socket/groupChatHandler');
@@ -70,6 +72,8 @@ app.use('/api/testimonies', testimoniesRoutes);
 app.use('/api/pastor', pastorRoutes);
 app.use('/api/questions', questionsRoutes);
 app.use('/api/mentorship', mentorshipRoutes);
+app.use('/api/wall', wallRoutes);
+app.use('/api/missions', missionsRoutes);
 
 app.get('/', (req, res) => {
   res.json({
